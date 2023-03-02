@@ -1,0 +1,14 @@
+name = "MultiDimensionalClustering"
+uuid = "8a50e92e-71b7-49a6-8598-9a335a7d1ce8"
+authors = ["Andre Souza <andrenogueirasouza@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+Enzyme = "7da242da-08ed-463a-9acd-ee780be4f1d9"
+GLMakie = "e9467ef8-e4e7-5192-8a1a-b1aee30e663a"
+HDF5 = "f67ccb44-e63f-5c2f-98bd-6dc0ccc4ba2f"
+MarkovChainHammer = "38c40fd0-bccb-4723-b30d-b2caea0ad8d9"
+ParallelKMeans = "42b8e9d4-006b-409a-8472-7f34b3fb58af"
+ProgressBars = "49802e3a-d2f1-5c88-81d8-b72133a6f568"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
