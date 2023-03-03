@@ -1,24 +1,3 @@
-function lorenz63_data(n_clusters)
-    dt = 0.01
-    lor63 = Systems.lorenz()
-    L = Int(1000 / dt)
-    trj = Matrix(trajectory(lor63, L * dt, Δt=dt))
-    res = 1
-    L2 = Int(L / res)
-    Dt = dt * res
-    x = zeros(Float64, 3, L2)
-    for i = 1:size(x)[2]-1
-        x[:, i] = trj[(i-1)*res+1, :]
-    end
-
-    x = x[:, 10000:end]
-
-    kmn = kmeans(x, n_clusters; n_threads=12, max_iters=1000000)
-    X = kmn.assignments
-    return x, X, Dt
-end
-
-
 function lorenz(x)
     x1 = x[1]
     x2 = x[2]
