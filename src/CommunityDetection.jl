@@ -1,5 +1,6 @@
 module CommunityDetection 
     using LinearAlgebra
+    using MarkovChainHammer.TransitionMatrix: perron_frobenius
     export leicht_newman, classes_timeseries
 
     function modularity_matrix(A)
@@ -70,6 +71,45 @@ module CommunityDetection
             end
         end
         return F, G, H
+    end
+
+    function leicht_newman(X, qmin, indices; progress_bar = false)
+        LN = []
+        if progress_bar 
+            iterator = ProgressBar(indices)
+        else
+            iterator = indices
+        end
+        for i in iterator 
+            P = perron_frobenius(X; step = i)
+            lntmp = leicht_newman(P, qmin)
+            push!(LN, lntmp)
+        end
+        return LN
+    end
+
+    function leicht_newman_intersection(LN)
+        inter_array = copy(LN)
+        for h = eachindex(inter_array[1:end-1])
+            inter_array1 = []
+            for i = eachindex(inter_array[1:end-1])
+                inter_array2 = []
+                for j = eachindex(inter_array[i]), k = eachindex(inter_array[i+1])
+                    inter_temp = intersect(inter_array[i][j], inter_array[i+1][k])
+                    if length(inter_temp) > 0
+                        push!(inter_array2, inter_temp)
+                    end
+                end
+                push!(inter_array1, inter_array2)
+            end
+            inter_array = inter_array1
+        end
+        return inter_array[1]
+    end
+
+    function greatest_common_cluster(X, qmin, indices; progress_bar=false)
+        LNs = leicht_newman(X, qmin, indices; progress_bar=progress_bar)
+        return leicht_newman_intersection(LNs)
     end
 
     function classes_timeseries(LN, X)
