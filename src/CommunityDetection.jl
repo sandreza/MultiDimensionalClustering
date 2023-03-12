@@ -1,7 +1,7 @@
 module CommunityDetection 
-    using LinearAlgebra
+    using LinearAlgebra, ProgressBars
     using MarkovChainHammer.TransitionMatrix: perron_frobenius
-    export leicht_newman, classes_timeseries
+    export leicht_newman, classes_timeseries, greatest_common_cluster
 
     function modularity_matrix(A)
         N = size(A)[1]
