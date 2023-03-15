@@ -1,5 +1,5 @@
 # MultiDimensionalClustering
-Companion Repository for the paper "Clustering of multi-dimensional dynamical systems"
+Companion Repository for the paper "Clustering of multi-dimensional dynamical systems". Requires Julia 1.8+ 
 
 # Steps
 1. Download the repository
