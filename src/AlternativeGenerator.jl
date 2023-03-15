@@ -57,7 +57,11 @@ function alternative_generator(E::Eigen, X, dt)
     Λ, V = E
     W = inv(V)
     Λ̃ = fit_autocorrelation(Λ, W, X, dt)
-    Q̃ = real.(V * Diagonal(Λ̃) * W)
+    tmp = V * Diagonal(Λ̃) * W
+    Q̃ = real.(tmp)
+    if norm(imag.(tmp)) / norm(Q̃) > sqrt(eps(1.0))
+        warn("Warning: eigenvalue correction failed")
+    end
     return Q̃
 end
 
