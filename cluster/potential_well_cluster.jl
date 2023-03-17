@@ -82,9 +82,10 @@ for τ in ProgressBar(τs)
 end
 ##
 τ_labels = ["τ = dt", "τ = -1 / λ₄", "τ = -1 / λ₃", "τ = -1 / λ₂"]
-fig = Figure(resolution=(2040, 1206))
 labelsize = 40
 axis_options = (; xlabel="log10(qmin)", ylabel="Number of Clusters", xgridstyle=:dash, ygridstyle=:dash, ygridwidth=5, xgridwidth=5, titlesize=labelsize, ylabelsize=labelsize, xlabelsize=labelsize, xticklabelsize=labelsize, yticklabelsize=labelsize)
+
+fig = Figure(resolution=(2040, 1206))
 for i in 1:4
     jj = (i-1) % 2 + 1
     ii = (i-1) ÷ 2 + 1
@@ -92,7 +93,7 @@ for i in 1:4
     scatter!(ax, log10.(qmins),  noc[i], markersize = 20.0, markerspacing = 0.1, markerstrokewidth = 0.0)
     xlims!(ax, -7, 4)
     ax.xticks = (collect(-7:4), string.(collect(-7:4)))
-    ax.yticks = (collect(1:8), string.(collect(1:8))) # , ["75S", "50S", "25S", "0", "25N", "50N", "75N"]
+    ax.yticks = (collect(1:8), string.(collect(1:8))) 
     ylims!(ax, 0, 9)
 end
 display(fig)
