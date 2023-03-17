@@ -20,3 +20,11 @@ else
     include("lorenz.jl")
 end
 
+# newton
+if isfile(pwd() * "/data/newton.hdf5")
+    @info "newton data already exists. skipping data generation"
+else
+    include("newton.jl")
+end
+
+
