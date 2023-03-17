@@ -82,7 +82,7 @@ for τ in ProgressBar(τs)
 end
 ##
 τ_labels = ["τ = dt", "τ = -1 / λ₄", "τ = -1 / λ₃", "τ = -1 / λ₂"]
-fig = Figure() 
+fig = Figure(resolution=(2040, 1206))
 labelsize = 40
 axis_options = (; xlabel="log10(qmin)", ylabel="Number of Clusters", xgridstyle=:dash, ygridstyle=:dash, ygridwidth=5, xgridwidth=5, titlesize=labelsize, ylabelsize=labelsize, xlabelsize=labelsize, xticklabelsize=labelsize, yticklabelsize=labelsize)
 for i in 1:4
