@@ -24,8 +24,8 @@ Qnew = (Q + Diagonal(p) * Q' * Diagonal(1 ./ p)) * 0.5 # remove imaginary eigenv
 ##
 @info "applying Modified Leicht-Newman clustering"
 cluster_heuristic = 10
-τ = 1.0  / -real(Λ[end + 1 - cluster_heuristic]) # the relevant timescales are proportional to the inverse eigenvalues
-q_min = 1e-16 
+τ = dt # 1.0  / -real(Λ[end + 1 - cluster_heuristic]) # the relevant timescales are proportional to the inverse eigenvalues
+q_min = sqrt(eps(1.0)) # 1e-16 
 P = exp(Qnew * τ)
 F, G, H = leicht_newman(P, q_min)
 @info "The algorithm identified $(length(F)) clusters"

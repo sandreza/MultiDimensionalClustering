@@ -1,7 +1,7 @@
 module CommunityDetection 
     using LinearAlgebra, ProgressBars
     using MarkovChainHammer.TransitionMatrix: perron_frobenius
-    export leicht_newman, classes_timeseries, greatest_common_cluster
+    export leicht_newman, classes_timeseries, greatest_common_cluster, leicht_newman_with_tree
 
     function modularity_matrix(A)
         N = size(A)[1]
@@ -38,8 +38,7 @@ module CommunityDetection
         Bg = Symmetric(Bg + Bg')
         s = principal_vector(Bg)
         q = modularity(Bg)
-        #q = modularity_eig(Bg)
-        qq = -1.0
+        qq = q_min
 
         if (q > q_min)
             ind1 = [i for (j, i) in enumerate(indices) if s[j] == 1]
@@ -86,6 +85,35 @@ module CommunityDetection
             push!(LN, lntmp)
         end
         return LN
+    end
+
+    function leicht_newman_with_tree(A, q_min)
+        B = modularity_matrix(A)
+        n = size(A)[1]
+        W, F, G, P1, P2 = [collect(1:n)], [], [], [1], []
+        qOld = 0.0
+        H = []
+        global_index = 1
+        while (length(W) > 0)
+            w = popfirst!(W)
+            p1 = popfirst!(P1)
+            ind1, ind2, q = split_community(B, w, q_min)
+            if (length(ind1) > 0) & (length(ind2) > 0)
+                W = [ind1, ind2, W...]
+                P1 = [global_index + 1, global_index + 2, P1...]
+                P2 = push!(P2, (p1, global_index + 1, q))
+                P2 = push!(P2, (p1, global_index + 2, q))
+                global_index += 2
+                push!(H, [ind1, ind2, q])
+                if q > 0
+                    qOld = q
+                end
+            else
+                push!(F, w)
+                push!(G, qOld)
+            end
+        end
+        return F, G, H, P2
     end
 
     function leicht_newman_intersection(LN)
