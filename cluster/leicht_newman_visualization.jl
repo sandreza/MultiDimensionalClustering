@@ -43,7 +43,7 @@ for i in eachindex(PI)
     node_labels[PI[i][1]] = PI[i][3]
 end
 
-transparancy = 0.4 * tanh.(adj_mod.nzval[:] / adj_mod.nzval[1]) .+ 0.1
+transparancy = 0.4 * adj_mod.nzval[:] / adj_mod.nzval[1] .+ 0.1
 edge_color = [(:red, transparancy[i]) for i in eachindex(PI)]
 ##
 G = SimpleDiGraph(adj)
