@@ -87,6 +87,31 @@ module CommunityDetection
         return LN
     end
 
+    function leicht_newman_nc(A, nc::Int64)
+        nc -= 1
+        _, G, H = leicht_newman(P, 0.)
+        H_ind = sortperm(G,rev=true)
+        H_ord = []
+        if nc > length(G) 
+            println("Maximum number of clusters is ", length(G)+1, ". nc has been now changed to ", length(G)+1)
+            nc = length(G)
+        end
+        for i = 1:nc
+            push!(H_ord, H[H_ind[i]][:])
+        end
+        ln_nc = []
+        push!(ln_nc, H_ord[end][1])
+        push!(ln_nc, H_ord[end][2])
+        for i in eachindex(H_ord[1:end-1]), j in 1:2
+            intersections = 0
+            for h in eachindex(ln_nc) intersections += length(intersect(ln_nc[h], H_ord[nc-i][j])) end
+                if intersections == 0
+                    push!(ln_nc, H_ord[nc-i][j])
+                end
+        end
+        return ln_nc
+    end
+
     function leicht_newman_with_tree(A, q_min)
         B = modularity_matrix(A)
         n = size(A)[1]
