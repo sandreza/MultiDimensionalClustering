@@ -61,12 +61,12 @@ module CommunityDetection
             if (length(ind1) > 0) & (length(ind2) > 0)
                 W = [ind1, ind2, W...]
                 push!(H, [ind1, ind2, q])
+                push!(G, q)
                 if q > 0
                     qOld = q
                 end
             else
                 push!(F, w)
-                push!(G, qOld)
             end
         end
         return F, G, H
