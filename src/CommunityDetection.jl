@@ -72,7 +72,7 @@ module CommunityDetection
         return F, G, H
     end
 
-    function leicht_newman(X, qmin, indices; progress_bar = false)
+    function leicht_newman(X, qmin::Float64, indices; progress_bar = false)
         LN = []
         if progress_bar 
             iterator = ProgressBar(indices)
