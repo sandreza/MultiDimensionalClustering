@@ -89,7 +89,7 @@ module CommunityDetection
                                                 
     function leicht_newman(A, nc::Int64)
         nc -= 1
-        _, G, H = leicht_newman(P, 0.)
+        _, G, H = leicht_newman(A, 0.)
         H_ind = sortperm(G,rev=true)
         H_ord = []
         if nc > length(G) 
