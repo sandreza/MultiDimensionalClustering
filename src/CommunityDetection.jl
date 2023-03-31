@@ -49,7 +49,7 @@ module CommunityDetection
         return [], [], qq
     end
 
-    function leicht_newman(A, q_min)
+    function leicht_newman(A, q_min::Float64)
         B = modularity_matrix(A)
         n = size(A)[1]
         W, F, G = [collect(1:n)], [], []
@@ -86,8 +86,8 @@ module CommunityDetection
         end
         return LN
     end
-
-    function leicht_newman_nc(A, nc::Int64)
+                                                
+    function leicht_newman(A, nc::Int64)
         nc -= 1
         _, G, H = leicht_newman(P, 0.)
         H_ind = sortperm(G,rev=true)
@@ -112,7 +112,7 @@ module CommunityDetection
         return ln_nc
     end
 
-    function leicht_newman_with_tree(A, q_min)
+    function leicht_newman_with_tree(A, q_min::Float64)
         B = modularity_matrix(A)
         n = size(A)[1]
         W, F, G, P1, P2 = [collect(1:n)], [], [], [1], []
@@ -160,7 +160,7 @@ module CommunityDetection
         return inter_array[1]
     end
 
-    function greatest_common_cluster(X, qmin, indices; progress_bar=false)
+    function greatest_common_cluster(X, qmin::Float64, indices; progress_bar=false)
         LNs = leicht_newman(X, qmin, indices; progress_bar=progress_bar)
         return leicht_newman_intersection(LNs)
     end
