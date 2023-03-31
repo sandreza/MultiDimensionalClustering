@@ -54,7 +54,7 @@ nlabels = [@sprintf("%.0e",node_labels[i]) for i in 1:nv(G)]
 graphplot!(ax, G, layout=layout, nlabels = nlabels, node_size = 100, 
            node_color = (:orange, 0.9), edge_color = edge_color, edge_width = 3,
             arrow_size=25, nlabels_align=(:center, :center),
-           nlabels_fontsize=nlabels_fontsize)
+           nlabels_fontsize=nlabels_fontsize, tangents=((0,-1),(0,-1)))
 hidedecorations!(ax);
 hidespines!(ax);
 display(fig)
