@@ -111,6 +111,21 @@ module CommunityDetection
         end
         return ln_nc
     end
+                                                                        
+    function leicht_newman(X, nc::Int64, indices; progress_bar = false)
+        LN = []
+        if progress_bar 
+            iterator = ProgressBar(indices)
+        else
+            iterator = indices
+        end
+        for i in iterator 
+            P = perron_frobenius(X; step = i)
+            lntmp = leicht_newman(P, nc)
+            push!(LN, lntmp)
+        end
+        return LN
+    end                                                                       
 
     function leicht_newman_with_tree(A, q_min::Float64)
         B = modularity_matrix(A)
