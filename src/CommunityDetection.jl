@@ -179,6 +179,11 @@ module CommunityDetection
         LNs = leicht_newman(X, qmin, indices; progress_bar=progress_bar)
         return leicht_newman_intersection(LNs)
     end
+                                                                                                                            
+     function greatest_common_cluster(X, nc::Int64, indices; progress_bar=false)
+        LNs = leicht_newman(X, nc, indices; progress_bar=progress_bar)
+        return leicht_newman_intersection(LNs)
+    end                                                                                                                       
 
     function classes_timeseries(LN, X)
         L = length(X)
