@@ -52,8 +52,8 @@ function eigenvalue_correction(Λ)
     return Λ̃
 end
 
-alternative_generator(Q::AbstractArray, X, dt) = alternative_generator(eigen(Q), X, dt)
-function alternative_generator(E::Eigen, X, dt; fitting_window_factor = 4)
+alternative_generator(Q::AbstractArray, X, dt, fitting_window_factor) = alternative_generator(eigen(Q), X, dt, fitting_window_factor)
+function alternative_generator(E::Eigen, X, dt, fitting_window_factor)
     Λ, V = E
     W = inv(V)
     Λ̃ = fit_autocorrelation(Λ, W, X, dt, fitting_window_factor)
