@@ -7,7 +7,7 @@ export fit_autocorrelation, alternative_generator
 model1(x, p) = @. exp(x * p[1])
 model2(x, p) = @. exp(x * p[1]) * cos(p[2] * x)
 
-function fit_autocorrelation(Λ, W, X, dt; indices=2:length(Λ), fitting_window_factor = 4)
+function fit_autocorrelation(Λ, W, X, dt, fitting_window_factor; indices=2:length(Λ))
     λlist = ComplexF64[]
     for index in ProgressBar(indices)
         g = W[end-index+1, :]
@@ -53,10 +53,10 @@ function eigenvalue_correction(Λ)
 end
 
 alternative_generator(Q::AbstractArray, X, dt) = alternative_generator(eigen(Q), X, dt)
-function alternative_generator(E::Eigen, X, dt)
+function alternative_generator(E::Eigen, X, dt; fitting_window_factor = 4)
     Λ, V = E
     W = inv(V)
-    Λ̃ = fit_autocorrelation(Λ, W, X, dt)
+    Λ̃ = fit_autocorrelation(Λ, W, X, dt, fitting_window_factor)
     tmp = V * Diagonal(Λ̃) * W
     Q̃ = real.(tmp)
     if norm(imag.(tmp)) / norm(Q̃) > sqrt(eps(1.0))
