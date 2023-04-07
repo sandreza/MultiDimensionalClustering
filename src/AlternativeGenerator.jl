@@ -9,7 +9,7 @@ model2(x, p) = @. exp(x * p[1]) * cos(p[2] * x)
 
 function fit_autocorrelation(Λ, W, X, dt, fitting_window_factor; indices=2:length(Λ))
     λlist = ComplexF64[]
-    Threads.@threads for index in indices
+    for index in indices
         g = W[end-index+1, :]
         λ = Λ[end-index+1]
         Nmax = ceil(Int, -1 / real(dt * λ))
