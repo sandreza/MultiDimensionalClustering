@@ -19,7 +19,6 @@ X = kmn.assignments
 Q = mean(BayesianGenerator(X; dt=dt))
 p = steady_state(Q)
 Q̃ = Diagonal(1 ./ sqrt.(p)) * Q * Diagonal(sqrt.(p))
-Qnew = (Q + Diagonal(p) * Q' * Diagonal(1 ./ p)) * 0.5 # remove imaginary eigenvalues
 Λ, V = eigen(Q)
 ##
 @info "applying Modified Leicht-Newman clustering"
