@@ -1,11 +1,3 @@
-using HDF5, GLMakie, ParallelKMeans, LinearAlgebra, Statistics, Random
-using MultiDimensionalClustering.CommunityDetection
-using MarkovChainHammer.BayesianMatrix
-using MarkovChainHammer.TransitionMatrix: steady_state
-using MarkovChainHammer.TransitionMatrix: perron_frobenius
-using MultiDimensionalClustering, NetworkLayout, SparseArrays, Graphs, GraphMakie, Printf
-Random.seed!(12345)
-##
 @info "opening data"
 hfile = h5open("data/lorenz.hdf5")
 x = read(hfile["x"])
