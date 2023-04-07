@@ -79,7 +79,7 @@ module CommunityDetection
         else
             iterator = indices
         end
-        for i in iterator 
+        Threads.@threads for i in iterator 
             P = perron_frobenius(X; step = i)
             lntmp = leicht_newman(P, qmin)
             push!(LN, lntmp)
@@ -119,7 +119,7 @@ module CommunityDetection
         else
             iterator = indices
         end
-        for i in iterator 
+        Threads.@threads for i in iterator 
             P = perron_frobenius(X; step = i)
             lntmp = leicht_newman(P, nc)
             push!(LN, lntmp)
