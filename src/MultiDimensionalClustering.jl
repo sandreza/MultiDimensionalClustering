@@ -2,6 +2,7 @@ module MultiDimensionalClustering
 
 include("CommunityDetection.jl")
 include("AlternativeGenerator.jl")
+include("Clusterization.jl")
 # Common Timestepping Tools
 export RungeKutta4
 
