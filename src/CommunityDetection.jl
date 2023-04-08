@@ -122,7 +122,7 @@ module CommunityDetection
         end
         Threads.@threads for i in iterator 
             P = perron_frobenius(X; step = i)
-            _, lntmp = leicht_newman(P, nc)
+            nc_temp, lntmp = leicht_newman(P, nc)
             push!(LN, lntmp)
         end
         return LN
