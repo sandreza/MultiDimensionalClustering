@@ -19,7 +19,7 @@ end
 
 function Q_performance(X_LN,Q_LN,Q_LN_pert,nc,dt,factor)
     l,_ = eigen(Q_LN_pert)
-    n_tau = Int(ceil(-1/l[end-1]/dt))*factor
+    n_tau = Int(ceil(-1/real(l[end-1])/dt))*factor
     Parr = zeros(Float64,n_tau,nc,nc)
     Qarr = zeros(Float64, n_tau,nc,nc)
     Qarr_pert = zeros(Float64,n_tau,nc,nc)   
@@ -40,7 +40,7 @@ function cluster(x, t_step, nc, dt; k_clusters=1000, n_threads=12, pm_steps = 4,
         X = x
     end
     P = perron_frobenius(X,step=t_step)
-    ln_nc = leicht_newman(P,nc)
+    nc, ln_nc = leicht_newman(P,nc)
     X_LN = classes_timeseries(ln_nc, X)
     ln_nc_indices = greatest_common_cluster(X, nc, indices; progress_bar = false)
     GCC = classes_timeseries(ln_nc_indices, X)
@@ -53,9 +53,9 @@ function cluster(x, t_step, nc, dt; k_clusters=1000, n_threads=12, pm_steps = 4,
     cluster_timeseries = Cluster_timeseries(X_LN, GCC, P_LN, Q_LN, Q_LN_pert)
     if performance
         Parr, Qarr, Qarr_pert = Q_performance(X_LN,Q_LN,Q_LN_pert,nc,dt,factor)
-        return cluster_timeseries, Parr, Qarr, Qarr_pert
+        return nc, cluster_timeseries, Parr, Qarr, Qarr_pert
     else
-        return cluster_timeseries
+        return nc, cluster_timeseries
     end
 end
 end
