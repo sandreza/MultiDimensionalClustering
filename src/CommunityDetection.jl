@@ -93,7 +93,7 @@ module CommunityDetection
         H_ind = sortperm(G,rev=true)
         H_ord = []
         if nc > length(G) 
-            println("Maximum number of clusters is ", length(G)+1, ". nc has been now changed to ", length(G)+1)
+            println("Maximum number of clusters is ", length(G)+1, ". The number of clusters has been now changed to ", length(G)+1)
             nc = length(G)
         end
         for i = 1:nc
@@ -109,7 +109,8 @@ module CommunityDetection
                     push!(ln_nc, H_ord[nc-i][j])
                 end
         end
-        return ln_nc
+        nc += 1                                                                
+        return nc, ln_nc
     end
                                                                         
     function leicht_newman(X, nc::Int64, indices; progress_bar = false)
@@ -121,7 +122,7 @@ module CommunityDetection
         end
         Threads.@threads for i in iterator 
             P = perron_frobenius(X; step = i)
-            lntmp = leicht_newman(P, nc)
+            nc_temp, lntmp = leicht_newman(P, nc)
             push!(LN, lntmp)
         end
         return LN
