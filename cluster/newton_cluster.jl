@@ -1,8 +1,8 @@
-using HDF5, GLMakie, ParallelKMeans, LinearAlgebra, Statistics, Random, Plots
+using HDF5, GLMakie, ParallelKMeans, LinearAlgebra, Statistics, Random
 using MultiDimensionalClustering.CommunityDetection
-using MarkovChainHammer.BayesianMatrix:BayesianGenerator
 using MarkovChainHammer.TransitionMatrix: steady_state
 using MarkovChainHammer.TransitionMatrix:perron_frobenius
+using MarkovChainHammer.BayesianMatrix
 Random.seed!(12345)
 ##
 @info "opening data"
@@ -42,7 +42,8 @@ ax1 = LScene(fig[1, 1]; show_axis=false)
 ax2 = LScene(fig[1, 2]; show_axis=false)
 ax3 = LScene(fig[1, 3]; show_axis=false)
 set_theme!(backgroundcolor=:white)
-lines!(ax1, x[1, 1:10:end], x[2, 1:10:end], x[3, 1:10:end], color=X[1:10:end], colormap=:glasbey_hv_n256, markersize=20.0, markerspacing=0.1, markerstrokewidth=0.0)
-lines!(ax2, x[1, 1:10:end], x[2, 1:10:end], x[3, 1:10:end], color=X_LN_Q[1:10:end], colormap=:glasbey_hv_n256, markersize=20.0, markerspacing=0.1, markerstrokewidth=0.0)
-lines!(ax3, x[1, 1:10:end], x[2, 1:10:end], x[3, 1:10:end], color=X_LN[1:10:end], colormap=:glasbey_hv_n256, markersize=20.0, markerspacing=0.1, markerstrokewidth=0.0)
+skip = 1
+scatter!(ax1, x[1, 1:skip:end], x[2, 1:skip:end], x[3, 1:skip:end], color=X[1:skip:end], colormap=:glasbey_hv_n256, markersize=10.0, markerspacing=0.1, markerstrokewidth=0.0)
+scatter!(ax2, x[1, 1:skip:end], x[2, 1:skip:end], x[3, 1:skip:end], color = X_LN_Q[1:skip:end], colormap=:glasbey_hv_n256, markersize=10.0, markerspacing=0.1, markerstrokewidth=0.0)
+scatter!(ax3, x[1, 1:skip:end], x[2, 1:skip:end], x[3, 1:skip:end], color = X_LN[1:skip:end], colormap=:glasbey_hv_n256, markersize=10.0, markerspacing=0.1, markerstrokewidth=0.0)
 display(fig)

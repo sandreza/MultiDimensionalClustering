@@ -29,7 +29,8 @@ end
 
 # There are problems with the GoogleDrive.jl package...
 # kuramoto
-if isfile(pwd() * "/data/newton.hdf5")
+#=
+if isfile(pwd() * "/data/kuramoto.hdf5")
     @info "kuramoto data already exists. skipping data generation"
 else
     drive_download("https://drive.google.com/file/d/11FN55Kr0Ue3JI5RDon60Iwquvoc-j5SW/view?usp=share_link", pwd() * "/data/kuramoto.hdf5")
@@ -41,3 +42,4 @@ if isfile(pwd() * "/data/PIV.hdf5")
 else
     drive_download("https://drive.google.com/file/d/11M2fCihaDXdW-_Kzm2XWChKP0qqOXDBp/view?usp=share_link", pwd() * "/data/PIV.hdf5")
 end
+=#
