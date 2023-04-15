@@ -90,7 +90,9 @@ module CommunityDetection
     function leicht_newman(A, nc::Int64)
         nc -= 1
         _, G, H = leicht_newman(A, 0.)
-        H_ind = sortperm(G,rev=true)
+        H_ind = sortperm(G[2:end],rev=true)
+        H_ind = H_ind .+ 1
+        pushfirst!(H_ind,1)
         H_ord = []
         if nc > length(G) 
             println("Maximum number of clusters is ", length(G)+1, ". The number of clusters has been now changed to ", length(G)+1)
