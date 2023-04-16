@@ -60,43 +60,48 @@ function cluster(x, t_step, nc, dt; k_clusters=1000, n_threads=12, pm_steps = 4,
 end
 
 function write_cluster(x,t_step,nc_input,dt,file_name; k_means=false, performance=true)
-    h = 0
-    for i in t_step, j in nc_input
-        h += 1
-        nc_input[h], CT, Parr, Qarr, Qarr_pert = cluster(x, i, j, dt; k_means=k_means, performance=performance,iteration1=10,iteration2=2)
-        hfile = h5open(pwd() * file_name * "-t_step=$i-nc=$j.hdf5", "w")
-        hfile["xc"] = CT.xc
-        hfile["GCC"] = CT.GCC
-        hfile["PerrGen"] = CT.PerrGen
-        hfile["Parr"] = Parr
-        hfile["Qarr"] = Qarr
-        hfile["Qarr_pert"] = Qarr_pert
-        close(hfile)
+    nc_output = zeros(Int64,length(t_step),length(nc_input))
+    Threads.@threads for i in eachindex(t_step)
+        Threads.@threads for j in eachindex(nc_input)
+            nc, CT, Parr, Qarr, Qarr_pert = cluster(x, t_step[i], nc_input[j], dt; k_means=k_means, performance=performance,iteration1=10,iteration2=2)
+            hfile = h5open(pwd() * file_name * "-t_step=$(t_step[i])-nc=$(nc_input[j]).hdf5", "w")
+            hfile["xc"] = CT.xc
+            hfile["GCC"] = CT.GCC
+            hfile["PerrGen"] = CT.PerrGen
+            hfile["Parr"] = Parr
+            hfile["Qarr"] = Qarr
+            hfile["Qarr_pert"] = Qarr_pert
+            close(hfile)
+            nc_output[i,j] = nc
+        end
     end
+    return nc_output
 end
 
-function read_cluster(t_step,nc_input,file_name)
+function read_cluster(t_step,nc_output,file_name)
     xc_array = []
     GCC_array = []
     PerrGen_array = []
     Parr_array = []
     Qarr_array = []
     Qarr_pert_array = []
-    for i in t_step, j in nc_input
-        hfile = h5open(pwd() * file_name * "-t_step=$i-nc=$j.hdf5")
-        xc = read(hfile["xc"])
-        GCC = read(hfile["GCC"])
-        PerrGen = read(hfile["PerrGen"])
-        Parr = read(hfile["Parr"])
-        Qarr = read(hfile["Qarr"])
-        Qarr_pert = read(hfile["Qarr_pert"])
-        close(hfile)
-        push!(xc_array,xc)
-        push!(GCC_array,GCC)
-        push!(PerrGen_array,PerrGen)
-        push!(Parr_array,Parr)
-        push!(Qarr_array,Qarr)
-        push!(Qarr_pert_array,Qarr_pert)
+    for i in eachindex(t_step)
+        for j in eachindex(nc_output[i,:])
+            hfile = h5open(pwd() * file_name * "-t_step=$(t_step[i])-nc=$(nc_output[i,j]).hdf5")
+            xc = read(hfile["xc"])
+            GCC = read(hfile["GCC"])
+            PerrGen = read(hfile["PerrGen"])
+            Parr = read(hfile["Parr"])
+            Qarr = read(hfile["Qarr"])
+            Qarr_pert = read(hfile["Qarr_pert"])
+            close(hfile)
+            push!(xc_array,xc)
+            push!(GCC_array,GCC)
+            push!(PerrGen_array,PerrGen)
+            push!(Parr_array,Parr)
+            push!(Qarr_array,Qarr)
+            push!(Qarr_pert_array,Qarr_pert)
+        end
     end
     return xc_array, GCC_array, PerrGen_array, Parr_array, Qarr_array, Qarr_pert_array
 end
