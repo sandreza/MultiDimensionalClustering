@@ -7,7 +7,7 @@ using MarkovChainHammer.BayesianMatrix:BayesianGenerator
 using MarkovChainHammer.TransitionMatrix: steady_state
 using MarkovChainHammer.TransitionMatrix:perron_frobenius
 
-export cluster
+export cluster, write_cluster, read_cluster
 
 struct Cluster_timeseries
     xc
