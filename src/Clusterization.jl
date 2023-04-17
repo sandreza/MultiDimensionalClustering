@@ -1,6 +1,6 @@
 module Clusterization
 
-using ParallelKMeans, LinearAlgebra, Statistics, Random
+using ParallelKMeans, LinearAlgebra, Statistics, Random, HDF5
 using MultiDimensionalClustering.CommunityDetection:leicht_newman, classes_timeseries, greatest_common_cluster
 using MultiDimensionalClustering.AlternativeGenerator
 using MarkovChainHammer.BayesianMatrix:BayesianGenerator
