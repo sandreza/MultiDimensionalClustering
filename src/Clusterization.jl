@@ -1,6 +1,6 @@
 module Clusterization
 
-using ParallelKMeans, LinearAlgebra, Statistics, Random, HDF5
+using ParallelKMeans, LinearAlgebra, Statistics, Random, HDF5, ProgressBars
 using MultiDimensionalClustering.CommunityDetection:leicht_newman, classes_timeseries, greatest_common_cluster
 using MultiDimensionalClustering.AlternativeGenerator
 using MarkovChainHammer.BayesianMatrix:BayesianGenerator
@@ -59,10 +59,17 @@ function cluster(x, t_step, nc, dt; k_clusters=1000, n_threads=12, pm_steps = 4,
     end
 end
 
-function write_cluster(x,t_step,nc_input,dt,file_name; k_means=false, performance=true)
+function write_cluster(x, t_step, nc_input, dt, file_name; k_means=false, performance=true, progress_bars = true)
     nc_output = zeros(Int64,length(t_step),length(nc_input))
-    Threads.@threads for i in eachindex(t_step)
-        Threads.@threads for j in eachindex(nc_input)
+    if progress_bars == true 
+        iterator_i = ProgressBar(eachindex(t_step))
+        iterator_j = ProgressBar(eachindex(nc_input))
+    else 
+        iterator_i = eachindex(t_step)
+        iterator_j = eachindex(nc_input)
+    end
+    for i in iterator_i
+        for j in iterator_j
             nc, CT, Parr, Qarr, Qarr_pert = cluster(x, t_step[i], nc_input[j], dt; k_means=k_means, performance=performance,iteration1=10,iteration2=2)
             hfile = h5open(pwd() * file_name * "-t_step=$(t_step[i])-nc=$(nc_input[j]).hdf5", "w")
             hfile["xc"] = CT.xc

@@ -7,7 +7,7 @@ using MultiDimensionalClustering, NetworkLayout, SparseArrays, Graphs, GraphMaki
 Random.seed!(12345)
 ##
 @info "opening data"
-hfile = h5open("data/potential_well.hdf5")
+hfile = h5open("data/newton.hdf5")
 x = read(hfile["x"])
 dt = read(hfile["dt"])
 close(hfile)
@@ -23,7 +23,7 @@ Q̃ = Diagonal(1 ./ sqrt.(p)) * Q * Diagonal(sqrt.(p))
 Λ, V = eigen(Q)
 ##
 @info "applying Modified Leicht-Newman clustering"
-τ = dt
+τ = real(-1 / Λ[end-20] )# dt
 q_min = sqrt(eps(1.0)) # 1e-16 
 P = exp(Q * τ)
 F, G, H, PI = leicht_newman_with_tree(P, q_min)
