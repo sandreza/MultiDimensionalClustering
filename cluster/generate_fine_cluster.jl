@@ -1,5 +1,5 @@
 using HDF5, GLMakie, ParallelKMeans, LinearAlgebra, Statistics, Random
-using MultiDimensionalClustering.CommunityDetection
+using MultiDimensionalClustering.CommunityDetection, ProgressBars
 using MarkovChainHammer.BayesianMatrix: BayesianGenerator
 using MarkovChainHammer.TransitionMatrix: steady_state
 using MarkovChainHammer.TransitionMatrix: perron_frobenius
@@ -17,7 +17,7 @@ for (i, file) in ProgressBar(enumerate(files))
         @info "data already exists. skipping data generation"
     else
         @info "applying K-means"
-        @info "generating data"
+        @info "generating kluster"
         kmn = kmeans(x, clusters_fine; max_iters=10^6)
         X = kmn.assignments
         @info "writing data for $file"
