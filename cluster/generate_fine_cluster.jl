@@ -23,7 +23,7 @@ for (i, file) in ProgressBar(enumerate(files))
         @info "writing data for $file"
         hfile = h5open("data/" * file * "_fine_cluster.hdf5", "w")
         hfile["X"] = X
+        hfile["dt"] = dt
         close(hfile)
     end
-
 end
