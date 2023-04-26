@@ -9,6 +9,13 @@ Random.seed!(12345)
 # create data directory if it's not there
 isdir(pwd() * "/figure") ? nothing : mkdir(pwd() * "/figure")
 
-# plot 1 
+figure_number = 1
+
+# generate figures
 include("algorithm.jl")
-save("figure/algorithm.png", fig)
+save("figure/figure" * string(figure_number) * ".png", fig)
+figure_number += 1
+
+include("PIV_viz.jl")
+save("figure/figure" * string(figure_number) * ".png", fig)
+figure_number += 1

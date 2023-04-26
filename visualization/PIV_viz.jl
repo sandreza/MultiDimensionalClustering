@@ -1,4 +1,5 @@
 using HDF5, GLMakie, Dierckx
+@info "Grabbing PIV data"
 hfile = h5open("data/PIV.hdf5")
 x = read(hfile["x"])
 dt = read(hfile["dt"])
@@ -6,7 +7,7 @@ U = read(hfile["U"])
 newf = U * x
 # 63 x 79  data split into 2 fields
 # https://juliagraphics.github.io/ColorSchemes.jl/stable/catalogue/ 
-using Dierckx
+@info "Starting Plot Creation"
 fig = Figure(resolution=(800, 1100))
 timeskip = 20
 for i in 1:6
@@ -26,3 +27,4 @@ for i in 1:6
     hidedecorations!(ax)
 end
 display(fig)
+@info "Done with PIV viz"
