@@ -19,3 +19,7 @@ figure_number += 1
 include("PIV_viz.jl")
 save("figure/figure" * string(figure_number) * ".png", fig)
 figure_number += 1
+
+include("kuramoto_viz.jl")
+save("figure/figure" * string(figure_number) * ".png", fig)
+figure_number += 1
