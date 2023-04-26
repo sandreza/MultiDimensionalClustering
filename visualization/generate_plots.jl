@@ -1,4 +1,4 @@
-using HDF5, GLMakie, ParallelKMeans, LinearAlgebra, Statistics, Random
+using HDF5, GLMakie, LinearAlgebra, Statistics, Random
 using MultiDimensionalClustering.CommunityDetection
 using MarkovChainHammer.BayesianMatrix
 using MarkovChainHammer.TransitionMatrix: steady_state

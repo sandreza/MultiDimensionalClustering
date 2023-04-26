@@ -4,10 +4,10 @@ using MarkovChainHammer.BayesianMatrix: BayesianGenerator
 using MarkovChainHammer.TransitionMatrix: steady_state
 using MarkovChainHammer.TransitionMatrix: perron_frobenius
 Random.seed!(12345)
-clusters_fine = 1000
-files = ["potential_well", "lorenz", "newton"]
-cluster_heuristics = [8, 4, 8]
 check_file = false
+
+files = ["potential_well", "lorenz", "newton"]
+cluster_heuristics = [8, 2, 8]
 for (i, file) in ProgressBar(enumerate(files))
     @info "opening data for $file"
     hfile = h5open("data/" * file * "_fine_cluster.hdf5")
@@ -38,6 +38,7 @@ for (i, file) in ProgressBar(enumerate(files))
         hfile["eigenvectors"] = V
         hfile["generator"] = Q
         hfile["tree_edge_numbers"] = length(PI)
+        hfile["Flength"] = length(F)
         N = maximum([maximum([PI[i][1], PI[i][2]]) for i in eachindex(PI)])
         hfile["tree_matrix_size"] = N
         for i in eachindex(PI)
