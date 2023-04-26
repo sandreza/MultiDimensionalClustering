@@ -13,10 +13,10 @@ timeskip = 20
 for i in 1:6
     jj = (i - 1) ÷ 3 + 1
     ii = (i - 1) % 3 + 1
-    println(ii, jj)
+    println("finishing panel ($ii, $jj)")
     index = (i - 1) * timeskip + 1
-    timeindex = (index-1) * dt
-    titlestring = "t = $(timeindex)"
+    timevalue = round(Int, (index - 1) * dt * 1000)
+    titlestring = "t = $(timevalue) ms"
     ax = Axis(fig[ii, jj]; title=titlestring)
     u = reshape(newf[1:4977, index], (63, 79))
     v = reshape(newf[4978:end, index], (63, 79))
