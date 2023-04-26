@@ -6,6 +6,7 @@ version = "0.1.0"
 [deps]
 DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa"
 Enzyme = "7da242da-08ed-463a-9acd-ee780be4f1d9"
+FFTW = "7a1cc6ca-52ef-59f5-83cd-3a7055c09341"
 GLMakie = "e9467ef8-e4e7-5192-8a1a-b1aee30e663a"
 GoogleDrive = "91feb7a0-3508-11ea-1e8e-afea2c1c9a19"
 GraphMakie = "1ecd5474-83a3-4783-bb4f-06765db800d2"
