@@ -49,6 +49,7 @@ elabels = string.([round(Q_prim[i]; digits=2) for i in 1:ne(g_Q)])
 transparancy = [Q_prim[i] for i in 1:ne(g_Q)]
 elabels_color = [(:black, transparancy[i] > eps(100.0)) for i in 1:ne(g_Q)]
 edge_color_Q = [(:black, transparancy[i]) for i in 1:ne(g_Q)]
+edge_color_Q = [(cgrad(colormap)[(i-1)÷(size(Q)[1])+1], transparancy[i]) for i in 1:ne(g_Q)]
 node_color = [(cgrad(colormap)[i]) for i in 1:nv(g_Q)]
 edge_attr = (; linestyle=[:dot, :dash, :dash, :dash, :dot, :dash, :dash, :dash, :dot])
 elabels_fontsize = 180
@@ -67,7 +68,7 @@ p_Q = graphplot!(ax_Q, g_Q; kwargs_edges..., kwargs_nodes..., kwargs_arrows...)
 
 hidedecorations!(ax_Q)
 
-# 3D plot
+## 3D plot
 ax_new = LScene(fig[1, 2]; show_axis=false) # Axis3(fig[1,3])# 
 colors = [cgrad(colormap)[X_LN[i]] for i in eachindex(X_LN)]
 lines!(ax_new, x[1, :], x[2, :], x[3, :], color=colors, markersize=20.0, markerspacing=0.1, markerstrokewidth=0.0)
