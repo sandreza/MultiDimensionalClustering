@@ -62,7 +62,8 @@ function alternative_generator(E::Eigen, X, dt, fitting_window_factor)
     if norm(imag.(tmp)) / norm(Q̃) > sqrt(eps(1.0))
         warn("Warning: eigenvalue correction failed")
     end
-    return Q̃
+#     return Q̃
+    return tmp
 end
 
 end # module AlternativeGenerator
