@@ -1,4 +1,6 @@
-using SparseArrays, NetworkLayout, Graphs, Printf, GLMakie, NetworkLayout, GraphMakie, Graphs
+using SparseArrays, NetworkLayout, Graphs, Printf, GLMakie, NetworkLayout, GraphMakie, Graphs, HDF5
+using MultiDimensionalClustering
+using MultiDimensionalClustering.CommunityDetection
 file = "lorenz"
 
 @info "opening data for $file"
