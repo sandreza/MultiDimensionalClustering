@@ -15,7 +15,7 @@ X = read(hfile["X"])
 close(hfile) 
 
 @info "opening coarse partition"
-hfile = h5open("data/lorenz_coarse_cluster.hdf5")
+hfile = h5open("data/potential_well_coarse_cluster.hdf5")
 edge_numbers = read(hfile["tree_edge_numbers"])
 N = read(hfile["tree_matrix_size"])
 adj = spzeros(Int64, N, N)
