@@ -37,9 +37,6 @@ for i in (1:5)
     push!(Xc, temp2)
 end
 # ##
-# f_index = 5
-# plot_fine_cluster(x[f_index],X[f_index]; mks=5, res = 1)
-# ##
 # ######## DANGER #########
 # Threads.@threads for i in ProgressBar(1:5)
 #     coarse_cluster_tree(X[i],dt[i],8; file=files[i])
@@ -60,43 +57,14 @@ for i in 1:5
     push!(edge_numbers_array, temp5)
     push!(τ, temp6)
 end
-# ##
-# f_index = 5
-# plot_coarse_cluster_tree(x[f_index],X_LN_array[f_index], adj_array[f_index], adj_mod_array[f_index], node_labels_array[f_index], edge_numbers_array[f_index], τ[f_index]; res = 5, mks = 5)
-# ##
 ######## DANGER #########
 qmins = []
 push!(qmins, [0. ,0. ,0. ,0. ,0. ,0. ,0. ,0. ])
 push!(qmins, [3e-1 ,3e-1 ,3e-1 ,3e-1 ,3e-1 ,3e-1 ,3e-1 ,5e-1 ])
-push!(qmins, [4e-1 ,4e-1 ,4e-1 ,4e-1 ,4e-1 ,4e-1 ,4e-1 ,4e-1 ])
+push!(qmins, [9e-1 ,9e-1 ,9e-1 ,9e-1 ,9e-1 ,9e-1 ,9e-1 ,1e0 ])
 push!(qmins, [1e-1 ,1e-1 ,1e-1 ,1e-1 ,1e-1 ,1e-1 ,1e-1 ,1e-1 ])  
-push!(qmins, [4e-1 ,4e-1 ,4e-1 ,4e-1 ,4e-1 ,4e-1 ,4e-1 ,4e-1 ])
+push!(qmins, [9e-1 ,9e-1 ,9e-1 ,9e-1 ,9e-1 ,9e-1 ,9e-1 ,9e-1 ])
 indices = [1,2,3,4,5,6,7,8]
 Threads.@threads for i in 1:5
     coarse_cluster(X[i], dt[i], indices, τ[i], qmins[i]; file=files[i])
 end
-##
-X_LN_array = []
-Q_array = []
-Q_pert_array = []
-Pt_array = []
-Qt_array = []
-Qt_pert_array = []
-score = []
-for i in 1:5
-    temp1, temp2, temp3, temp4, temp5, temp6, temp7 = read_coarse_cluster(files[i])
-    push!(X_LN_array, temp1)
-    push!(Q_array, temp2)
-    push!(Q_pert_array, temp3)
-    push!(Pt_array, temp4)
-    push!(Qt_array, temp5)
-    push!(Qt_pert_array, temp6)
-    push!(score, temp7)
-end
-##
-f_index = 5
-plot_coarse_cluster1(x[f_index], τ[f_index], X_LN_array[f_index], Q_array[f_index])
-##
-f_index = 5
-plot_coarse_cluster2(τ[f_index], dt[f_index], Pt_array[f_index], Qt_array[f_index], Qt_pert_array[f_index], 1)
-##

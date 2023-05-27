@@ -119,3 +119,7 @@ for f_index in 1:5
     figure_number = [4 f_index]
     plot_coarse_cluster2(dt[f_index], Pt_array[f_index], Qt_array[f_index], Qt_pert_array[f_index], indices[f_index], titles[f_index], figure_number)
 end
+##
+file = files[1]
+hfile = h5open(pwd()*"/data/" * file * "_coarse_cluster.hdf5")
+t_steps = read(hfile["t_steps"])

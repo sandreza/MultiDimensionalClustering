@@ -102,13 +102,13 @@ function coarse_cluster(X, dt, indices, τ, qmins; factor=10, iteration1=3, iter
         push!(Qt_pert_array, Qt_pert)
         push!(X_LN_array, X_LN)
         if file != false
-            hfile["X_LN_tms=($i])"] = X_LN
-            hfile["Q_tms=($i)"] = Q_LN
-            hfile["Q_pert_tms=($i)"] = Q_LN_pert
-            hfile["Pt_array_tms=($i)"] = Pt
-            hfile["Qt_array_tms=($i)"] = Qt
-            hfile["Qt_pert_tms=($i)"] = Qt_pert
-            hfile["score_tms=($i)"] = score
+            hfile["X_LN_tms=$i"] = X_LN
+            hfile["Q_tms=$i"] = Q_LN
+            hfile["Q_pert_tms=$i"] = Q_LN_pert
+            hfile["Pt_array_tms=$i"] = Pt
+            hfile["Qt_array_tms=$i"] = Qt
+            hfile["Qt_pert_tms=$i"] = Qt_pert
+            hfile["score_tms=$i"] = score
         end
     end
     if file != false
@@ -211,13 +211,13 @@ function read_coarse_cluster(file)
     Qt_pert_array = []
     score = []
     for i = 1:indices_len
-        push!(X_LN_array, read(hfile["X_LN_tms=($i])"]))
-        push!(Q_array, read(hfile["Q_tms=($i)"]))
-        push!(Q_pert_array, read(hfile["Q_pert_tms=($i)"]))
-        push!(Pt_array, read(hfile["Pt_array_tms=($i)"]))
-        push!(Qt_array, read(hfile["Qt_array_tms=($i)"]))
-        push!(Qt_pert_array, read(hfile["Qt_pert_tms=($i)"]))
-        push!(score, read(hfile["score_tms=($i)"]))
+        push!(X_LN_array, read(hfile["X_LN_tms=$i"]))
+        push!(Q_array, read(hfile["Q_tms=$i"]))
+        push!(Q_pert_array, read(hfile["Q_pert_tms=$i"]))
+        push!(Pt_array, read(hfile["Pt_array_tms=$i"]))
+        push!(Qt_array, read(hfile["Qt_array_tms=$i"]))
+        push!(Qt_pert_array, read(hfile["Qt_pert_tms=$i"]))
+        push!(score, read(hfile["score_tms=$i"]))
     end
     close(hfile)
     return X_LN_array, Q_array, Q_pert_array, Pt_array, Qt_array, Qt_pert_array, score
