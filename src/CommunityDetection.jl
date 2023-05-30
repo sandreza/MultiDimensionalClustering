@@ -85,10 +85,39 @@ module CommunityDetection
             push!(LN, lntmp)
         end
         return LN
+    end                                                                                                                 
+
+    function leicht_newman_with_tree(A, q_min::Float64)
+        B = modularity_matrix(A)
+        n = size(A)[1]
+        W, F, G, P1, P2 = [collect(1:n)], [], [], [1], []
+        qOld = 0.0
+        H = []
+        global_index = 1
+        while (length(W) > 0)
+            w = popfirst!(W)
+            p1 = popfirst!(P1)
+            ind1, ind2, q = split_community(B, w, q_min)
+            if (length(ind1) > 0) & (length(ind2) > 0)
+                W = [ind1, ind2, W...]
+                P1 = [global_index + 1, global_index + 2, P1...]
+                P2 = push!(P2, (p1, global_index + 1, q))
+                P2 = push!(P2, (p1, global_index + 2, q))
+                global_index += 2
+                push!(H, [ind1, ind2, q])
+                if q > 0
+                    qOld = q
+                end
+            else
+                push!(F, w)
+                push!(G, qOld)
+            end
+        end
+        return F, G, H, P2
     end
-                                                
+                                                                
     function leicht_newman(A, nc::Int64)
-        _, G, H, PI = leicht_newman_with_treeP(A, 0.)
+        _, G, H, PI = leicht_newman_with_tree(A, 0.)
         if nc > length(G) 
             println("Maximum number of clusters is ", length(G)+1, ". The number of clusters has been now changed to ", length(G)+1)
             nc = length(G)
@@ -131,36 +160,7 @@ module CommunityDetection
             push!(LN, lntmp)
         end
         return LN
-    end                                                                       
-
-    function leicht_newman_with_tree(A, q_min::Float64)
-        B = modularity_matrix(A)
-        n = size(A)[1]
-        W, F, G, P1, P2 = [collect(1:n)], [], [], [1], []
-        qOld = 0.0
-        H = []
-        global_index = 1
-        while (length(W) > 0)
-            w = popfirst!(W)
-            p1 = popfirst!(P1)
-            ind1, ind2, q = split_community(B, w, q_min)
-            if (length(ind1) > 0) & (length(ind2) > 0)
-                W = [ind1, ind2, W...]
-                P1 = [global_index + 1, global_index + 2, P1...]
-                P2 = push!(P2, (p1, global_index + 1, q))
-                P2 = push!(P2, (p1, global_index + 2, q))
-                global_index += 2
-                push!(H, [ind1, ind2, q])
-                if q > 0
-                    qOld = q
-                end
-            else
-                push!(F, w)
-                push!(G, qOld)
-            end
-        end
-        return F, G, H, P2
-    end
+    end  
 
     function leicht_newman_intersection(LN)
         inter_array = copy(LN)
