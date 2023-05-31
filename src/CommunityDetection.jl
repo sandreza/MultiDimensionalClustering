@@ -116,6 +116,31 @@ module CommunityDetection
         return F, G, H, P2
     end
                                                                 
+    function q_next(index,PI)
+        i = 1
+        while i <= length(PI) && PI[i][1] != PI[index][2]
+            i += 1
+        end
+        if i > length(PI)
+            return 0.
+        else
+            return PI[i][3]
+        end
+    end
+
+    function add_element(PI_ind,q,PI,index)
+        for i in eachindex(PI)
+            if PI[i][1] == index
+                push!(PI_ind, i)
+                push!(q, q_next(i,PI))
+            end
+        end
+        q_ind = sortperm(q,rev=true)
+        PI_ind = PI_ind[q_ind]
+        q = q[q_ind]
+        return PI_ind,q
+    end                                                            
+                                                                
     function leicht_newman(A, nc::Int64)
         _, G, H, PI = leicht_newman_with_tree(A, 0.)
         if nc > length(G) 
