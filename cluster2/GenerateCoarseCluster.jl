@@ -81,7 +81,7 @@ function coarse_cluster(X, dt, indices, τ, qmins; factor=10, iteration1=3, iter
     for i = 1:indices_len
         for j = 1:3
             P = perron_frobenius(X,step=t_steps[j,i])
-            ln_nc, _, _ = leicht_newman(P,qmins[i])
+            nc, ln_nc = leicht_newman(P,qmins[i])
             X_LN[:,j] = classes_timeseries(ln_nc, X)
         end
         if maximum([length(union(X_LN[:,1])), length(union(X_LN[:,2])), length(union(X_LN[:,3]))]) <= 8

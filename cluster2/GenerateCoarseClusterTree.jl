@@ -61,7 +61,7 @@ function timescales(λ)
 end
 
 function plot_coarse_cluster_tree(x,X_LN_array, adj_array, adj_mod_array, node_labels_array, edge_numbers_array, τ, title, figure_number; res = 5, mks = 10, azimuth=0.0pi, elevation=0.0pi)
-    fig = Figure(resolution=(4000, 4100))
+    fig = Figure(resolution=(5000, 4000))
     layout = Buchheim()
     colormap = :glasbey_hv_n256
     set_theme!(backgroundcolor=:white)
@@ -69,15 +69,15 @@ function plot_coarse_cluster_tree(x,X_LN_array, adj_array, adj_mod_array, node_l
     fct = 10
     for t = 1:n_timescales
         if t <= Int(n_timescales/2)
-            ax = Axis(fig[2:fct+1, t]; title=latexstring("t=$(round(τ[t],sigdigits=3))"), titlesize=60)
+            ax = Axis(fig[2:fct+1, t]; title=latexstring("\\textbf{t=$(round(τ[t],sigdigits=3))}"), titlesize=60)
         else
-            ax = Axis(fig[2*fct+2:3*fct+1, t-Int(n_timescales/2)]; title=latexstring("t=$(round(τ[t],sigdigits=3))"), titlesize=60)
+            ax = Axis(fig[2*fct+2:3*fct+1, t-Int(n_timescales/2)]; title=latexstring("\\textbf{t=$(round(τ[t],sigdigits=3))}"), titlesize=60)
         end
         G = SimpleDiGraph(adj_array[t])
         transparancy = 0.4 * adj_mod_array[t].nzval[:] / adj_mod_array[t].nzval[1] .+ 0.1
         nlabels_fontsize = 35
         edge_color = [(:red, transparancy[i]) for i in 1:edge_numbers_array[t]]
-        nlabels = [@sprintf("%.0e", node_labels_array[t][i]) for i in 1:nv(G)]
+        nlabels = [@sprintf("%.01e", node_labels_array[t][i]) for i in 1:nv(G)]
         graphplot!(ax, G, layout=layout, nlabels=nlabels, node_size=150,
             node_color=(:orange, 0.9), edge_color=edge_color, edge_width=5,
             arrow_size=45, nlabels_align=(:center, :center),

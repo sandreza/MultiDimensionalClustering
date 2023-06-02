@@ -1,7 +1,7 @@
 module GenerateFineCluster
 using HDF5, GLMakie, ParallelKMeans, LinearAlgebra, Statistics, Random
 using LaTeXStrings
-export read_fine_cluster, plot_fine_cluster, fine_cluster
+export read_fine_cluster, plot_fine_cluster, plot_fine_cluster_array, fine_cluster
 
 function read_fine_cluster(file)
     hfile = h5open(pwd() * "/data/" * file * "_fine_cluster.hdf5")
@@ -12,11 +12,28 @@ function read_fine_cluster(file)
 end
 
 function plot_fine_cluster(x,X,title,figure_number; res = 1, mks = 5, azimuth=0.0pi, elevation=0.0pi)
-    fig = Figure(resolution=(2000, 1600))
+    L = length(X)
+    fig = Figure(resolution=(1500, 1500*L))
     colormap = :glasbey_hv_n256
-    ax = Axis3(fig[1, 1], xticklabelsize=40, yticklabelsize=40, zticklabelsize=40, xlabelsize=60, ylabelsize=60, zlabelsize=60, azimuth = azimuth, elevation=elevation)
-    scatter!(ax, x[1, 1:res:end], x[2, 1:res:end], x[3, 1:res:end], color=cgrad(colormap)[(X[1:res:end] .% 256 .+1)]; markersize=mks)
-    Label(fig[1, 1, Top()], title; textsize=100)
+    for i in 1:L
+        ax = Axis3(fig[1, i], xticklabelsize=40, yticklabelsize=40, zticklabelsize=40, xlabelsize=60, ylabelsize=60, zlabelsize=60, azimuth = azimuth, elevation=elevation)
+        scatter!(ax, x[i][1, 1:res:end], x[i][2, 1:res:end], x[i][3, 1:res:end], color=cgrad(colormap)[(X[i][1:res:end] .% 256 .+1)]; markersize=mks)
+        Label(fig[1, i, Top()], title; textsize=100)
+    end
+    save("figure/figure" * string(figure_number[1])*string(figure_number[2]) * ".png", fig)
+end
+
+function plot_fine_cluster_array(x,X,title,figure_number,mks,res,azimuth,elevation)
+    L = length(X)
+    fig = Figure(resolution=(1800*L, 1500))
+    colormap = :glasbey_hv_n256
+    for i in 1:L
+        ax = Axis3(fig[1, i], xticklabelsize=40, yticklabelsize=40, zticklabelsize=40, xlabelsize=60, ylabelsize=60, zlabelsize=60, azimuth = azimuth[i], elevation=elevation[i])
+        scatter!(ax, x[i][1, 1:res[i]:end], x[i][2, 1:res[i]:end], x[i][3, 1:res[i]:end], color=cgrad(colormap)[(X[i][1:res[i]:end] .% 256 .+1)]; markersize=mks[i])
+        Label(fig[1, i, Top()], title[i]; textsize=100)
+    end
+    colgap!(fig.layout, 0)
+    rowgap!(fig.layout, 0)
     save("figure/figure" * string(figure_number[1])*string(figure_number[2]) * ".png", fig)
 end
 

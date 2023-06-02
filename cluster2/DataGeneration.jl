@@ -60,11 +60,12 @@ end
 ######## DANGER #########
 qmins = []
 push!(qmins, [0. ,0. ,0. ,0. ,0. ,0. ,0. ,0. ])
-push!(qmins, [3e-1 ,3e-1 ,3e-1 ,3e-1 ,3e-1 ,3e-1 ,3e-1 ,5e-1 ])
+push!(qmins, [3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ])
 push!(qmins, [9e-1 ,9e-1 ,9e-1 ,9e-1 ,9e-1 ,9e-1 ,9e-1 ,1e0 ])
 push!(qmins, [1e-1 ,1e-1 ,1e-1 ,1e-1 ,1e-1 ,1e-1 ,1e-1 ,1e-1 ])  
-push!(qmins, [9e-1 ,9e-1 ,9e-1 ,9e-1 ,9e-1 ,9e-1 ,9e-1 ,9e-1 ])
+push!(qmins, [2 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ])
 indices = [1,2,3,4,5,6,7,8]
-Threads.@threads for i in 1:5
+#Threads.@threads 
+for i in 2:2
     coarse_cluster(X[i], dt[i], indices, τ[i], qmins[i]; file=files[i])
 end
