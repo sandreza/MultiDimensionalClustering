@@ -7,6 +7,7 @@ using Main.GenerateCoarseClusterTree:read_coarse_cluster_tree, plot_coarse_clust
 using Main.GenerateCoarseCluster:coarse_cluster, plot_coarse_cluster1, plot_coarse_cluster2, read_coarse_cluster
 using HDF5, LaTeXStrings, GLMakie
 using SparseArrays, NetworkLayout, Graphs, Printf, NetworkLayout, GraphMakie, Graphs
+
 ##
 function read_data(file)
     hfile = h5open(pwd()*"/data/" *file* ".hdf5")
