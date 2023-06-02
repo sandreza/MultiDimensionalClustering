@@ -85,50 +85,7 @@ module CommunityDetection
             push!(LN, lntmp)
         end
         return LN
-    end
-                                                
-    function leicht_newman(A, nc::Int64)
-        nc -= 1
-        _, G, H = leicht_newman(A, 0.)
-        H_ind = sortperm(G[2:end],rev=true)
-        H_ind = H_ind .+ 1
-        pushfirst!(H_ind,1)
-        H_ord = []
-        if nc > length(G) 
-            println("Maximum number of clusters is ", length(G)+1, ". The number of clusters has been now changed to ", length(G)+1)
-            nc = length(G)
-        end
-        for i = 1:nc
-            push!(H_ord, H[H_ind[i]][:])
-        end
-        ln_nc = []
-        push!(ln_nc, H_ord[end][1])
-        push!(ln_nc, H_ord[end][2])
-        for i in eachindex(H_ord[1:end-1]), j in 1:2
-            intersections = 0
-            for h in eachindex(ln_nc) intersections += length(intersect(ln_nc[h], H_ord[nc-i][j])) end
-                if intersections == 0
-                    push!(ln_nc, H_ord[nc-i][j])
-                end
-        end
-        nc += 1                                                                
-        return nc, ln_nc
-    end
-                                                                        
-    function leicht_newman(X, nc::Int64, indices; progress_bar = false)
-        LN = []
-        if progress_bar 
-            iterator = ProgressBar(indices)
-        else
-            iterator = indices
-        end
-        Threads.@threads for i in iterator 
-            P = perron_frobenius(X; step = i)
-            nc_temp, lntmp = leicht_newman(P, nc)
-            push!(LN, lntmp)
-        end
-        return LN
-    end                                                                       
+    end                                                                                                                 
 
     function leicht_newman_with_tree(A, q_min::Float64)
         B = modularity_matrix(A)
@@ -158,6 +115,77 @@ module CommunityDetection
         end
         return F, G, H, P2
     end
+                                                                
+    function q_next(index,PI)
+        i = 1
+        while i <= length(PI) && PI[i][1] != PI[index][2]
+            i += 1
+        end
+        if i > length(PI)
+            return 0.
+        else
+            return PI[i][3]
+        end
+    end
+
+    function add_element(PI_ind,q,PI,index)
+        for i in eachindex(PI)
+            if PI[i][1] == index
+                push!(PI_ind, i)
+                push!(q, q_next(i,PI))
+            end
+        end
+        q_ind = sortperm(q,rev=true)
+        PI_ind = PI_ind[q_ind]
+        q = q[q_ind]
+        return PI_ind,q
+    end                                                            
+                                                                
+    function leicht_newman(A, nc::Int64)
+        _, G, H, PI = leicht_newman_with_tree(A, 0.)
+        if nc > length(G) 
+            println("Maximum number of clusters is ", length(G)+1, ". The number of clusters has been now changed to ", length(G)+1)
+            nc = length(G)
+        end
+        PI_ind = []
+        q = []
+        PI_ind,q = add_element(PI_ind,q,PI,1) 
+        for j = 1:nc-2
+            ind_rem = popfirst!(PI_ind)
+            popfirst!(q)
+            PI_ind,q = add_element(PI_ind,q,PI,PI[ind_rem][2]) 
+        end
+        PI_cluster = []
+        for i in eachindex(PI)
+            h = mod(i,2)
+            if h == 0 h = 2 end
+            push!(PI_cluster, [Int(floor((i+1)/2)),h])
+        end
+        H_ind = []
+        for i in PI_ind
+            push!(H_ind,PI_cluster[i])
+        end
+        ln_nc = []
+        for i in eachindex(H_ind)
+            push!(ln_nc, H[H_ind[i][1]][H_ind[i][2]])
+        end                                                           
+        return nc, ln_nc
+    end
+                                                                        
+    function leicht_newman(X, nc::Int64, indices; progress_bar = false)
+        LN = []
+        if progress_bar 
+            iterator = ProgressBar(indices)
+        else
+            iterator = indices
+        end
+        Threads.@threads for i in iterator 
+            P = perron_frobenius(X; step = i)
+            nc_temp, lntmp = leicht_newman(P, nc)
+            push!(LN, lntmp)
+        end
+        return LN
+    end  
 
     function leicht_newman_intersection(LN)
         inter_array = copy(LN)
