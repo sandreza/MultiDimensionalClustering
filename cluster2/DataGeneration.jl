@@ -23,12 +23,12 @@ for i in 1:5
     push!(x, temp1)
     push!(dt, temp2)
 end
-# ##
+##
 # ######## DANGER #########
-# for i in ProgressBar(1:5)
-#    fine_cluster(x[i]; n_clusters = 2000, file = files[i])
-# end
-# ##
+for i in ProgressBar(5:5)
+   fine_cluster(x[i]; n_clusters = 12, file = files[i])
+end
+##
 X = []
 Xc = []
 for i in (1:5)

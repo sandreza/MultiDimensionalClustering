@@ -3,6 +3,19 @@ using HDF5, GLMakie, ParallelKMeans, LinearAlgebra, Statistics, Random
 using LaTeXStrings
 export read_fine_cluster, plot_fine_cluster, plot_fine_cluster_array, fine_cluster
 
+function norm_ord(X,Xc)
+    L = length(X)
+    n_clusters = length(union(X))
+    E = zeros(n_clusters)
+    for i = 1:n_clusters E[i] = norm(Xc[:,i],2) end
+    E_ind = sortperm(E)
+    clusters_ord = zeros(Int,L)
+    for i = 1:L
+        clusters_ord[i] = findall(y->y == X[i],E_ind)[1]
+    end
+    return clusters_ord,Xc[:,E_ind]
+end
+
 function read_fine_cluster(file)
     hfile = h5open(pwd() * "/data/" * file * "_fine_cluster.hdf5")
     X = read(hfile["X"])
@@ -45,6 +58,7 @@ function fine_cluster(x; n_clusters = 2000, file = false)
     kmn = kmeans(x, n_clusters; max_iters=10^6)
     X = kmn.assignments
     Xc = kmn.centers
+    X,Xc = norm_ord(X,Xc)
     if file != false
         hfile = h5open(pwd()*"/data/" * file * "_fine_cluster.hdf5", "w")
         hfile["X"] = X

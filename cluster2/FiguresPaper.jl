@@ -147,3 +147,8 @@ for f_index in 1:5
     figure_number = [4 f_index]
     plot_coarse_cluster2(dt[f_index], Pt_array[f_index], Qt_array[f_index], Qt_pert_array[f_index], indices[f_index], titles[f_index], figure_number)
 end
+##
+fig = Figure(resolution=(3000, 1500))
+ax = Axis(fig[1,1])
+lines!(ax, X[4][1:1000])
+fig
