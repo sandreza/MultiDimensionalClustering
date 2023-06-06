@@ -23,12 +23,11 @@ for i in 1:5
     push!(x, temp1)
     push!(dt, temp2)
 end
-##
-# ######## DANGER #########
-for i in ProgressBar(5:5)
-   fine_cluster(x[i]; n_clusters = 12, file = files[i])
+######## DANGER #########
+for i in 1:5
+   fine_cluster(x[i]; n_clusters = 30, file = files[i])
 end
-##
+
 X = []
 Xc = []
 for i in (1:5)
@@ -36,12 +35,11 @@ for i in (1:5)
     push!(X, temp1)
     push!(Xc, temp2)
 end
-# ##
-# ######## DANGER #########
-# Threads.@threads for i in ProgressBar(1:5)
-#     coarse_cluster_tree(X[i],dt[i],8; file=files[i])
-# end
-# ##
+######## DANGER #########
+for i in 1:5
+    coarse_cluster_tree(X[i],dt[i],8; file=files[i])
+end
+
 X_LN_array = []
 adj_array = []
 adj_mod_array = []
@@ -59,13 +57,12 @@ for i in 1:5
 end
 ######## DANGER #########
 qmins = []
-push!(qmins, [0. ,0. ,0. ,0. ,0. ,0. ,0. ,0. ])
-push!(qmins, [3 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ])
-push!(qmins, [9e-1 ,9e-1 ,9e-1 ,9e-1 ,9e-1 ,9e-1 ,9e-1 ,1e0 ])
-push!(qmins, [1e-1 ,1e-1 ,1e-1 ,1e-1 ,1e-1 ,1e-1 ,1e-1 ,1e-1 ])  
-push!(qmins, [2 ,3 ,3 ,3 ,3 ,3 ,3 ,3 ])
+push!(qmins, [2 ,2 ,4 ,4 ,4 ,4 ,4 , 8])
+push!(qmins, [3 ,3 ,3 ,4 ,4 ,4 ,4 , 4])
+push!(qmins, [2 ,4 ,4 ,4 ,4 ,4 ,4 , 4])
+push!(qmins, [2 ,2 ,2 ,4 ,4 ,4 ,4 , 2])  
+push!(qmins, [3 ,3 ,3 ,3 ,3 ,3 ,3 ,3])
 indices = [1,2,3,4,5,6,7,8]
-#Threads.@threads 
-for i in 2:2
+for i in 1:5
     coarse_cluster(X[i], dt[i], indices, τ[i], qmins[i]; file=files[i])
 end
