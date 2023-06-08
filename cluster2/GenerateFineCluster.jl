@@ -24,21 +24,22 @@ function fine_cluster(x; n_clusters = 2000, file = false, overwrite = false)
     if n_clusters > Int(round(length(x[1,:])/10))
         n_clusters = Int(round(length(x[1,:])/10))
     end
-    Random.seed!(12345)
-    kmn = kmeans(x, n_clusters; max_iters=10^3)
-    X = kmn.assignments
-    Xc = kmn.centers
     if file != false
         if overwrite | !(isfile(pwd()*"/data/" * file * "_fine_cluster.hdf5"))
+            Random.seed!(12345)
+            kmn = kmeans(x, n_clusters; max_iters=10^3)
+            X = kmn.assignments
+            Xc = kmn.centers
             @info "Create file: " * file * "_fine_cluster.hdf5"
             hfile = h5open(pwd()*"/data/" * file * "_fine_cluster.hdf5", "w")
             hfile["X"] = X
             hfile["Xc"] = Xc
             close(hfile)
+
         else
             @info "File already exists. Use overwrite = true to overwrite."
         end
     end
-    return X, Xc
+    return nothing
 end
 end

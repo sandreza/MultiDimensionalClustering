@@ -25,8 +25,11 @@ for i in 1:5
 end
 ##
 # ######## DANGER #########
-for i in ProgressBar(1:5)
-   fine_cluster(x[i]; n_clusters = 2000, file = files[i], overwrite = true)
+for i in ProgressBar(eachindex(files))
+    file = files[i]
+    # print(isfile(pwd()*"/data/" * file * "_fine_cluster.hdf5"))
+    # print(!(isfile(pwd()*"/data/" * file * "_fine_cluster.hdf5")))
+    fine_cluster(x[i]; n_clusters = 2000, file = files[i], overwrite = false)
 end
 ##
 X = []
@@ -39,9 +42,9 @@ end
 ##
 # ##
 # ######## DANGER #########
-# Threads.@threads for i in ProgressBar(1:5)
-#     coarse_cluster_tree(X[i],dt[i],8; file=files[i])
-# end
+Threads.@threads for i in ProgressBar(1:5)
+    coarse_cluster_tree(X[i],dt[i],8; file=files[i])
+end
 # ##
 X_LN_array = []
 adj_array = []
