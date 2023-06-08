@@ -118,7 +118,7 @@ function coarse_cluster(X, dt, indices, τ, qmins; factor=10, iteration1=3, iter
     return X_LN_array, Q_array, Q_pert_array, Pt_array, Qt_array, Qt_pert_array
 end
 
-function plot_coarse_cluster1(x, τ, X_LN_array, Q_array, score, title, figure_number; res = 1, mks = 5, azimuth=0.0pi, elevation=0.0pi)
+function plot_coarse_cluster1(x, X, τ, dt, X_LN_array, Q_array, score, title, figure_number; res = 1, mks = 5, azimuth=0.0pi, elevation=0.0pi, Lt=1000)
     indices_len = length(τ)
     g_Qarr = []
     kwargs_edges = []
@@ -153,26 +153,35 @@ function plot_coarse_cluster1(x, τ, X_LN_array, Q_array, score, title, figure_n
         push!(g_Qarr, g_Q)
     end
     set_theme!(backgroundcolor=:white)
-    fig = Figure(resolution=(4000, 4000))
+    fig = Figure(resolution=(4000, 6000))
     fct = 10
     for i = 1:indices_len
         if i <= Int(indices_len/2)
-            ax = Axis(fig[2:fct+1, i]; title=latexstring("\$\\textbf{t=$(round(τ[i],sigdigits=3))}\$"), titlesize=60)
+            ax = Axis(fig[2:fct+1, i]; title=latexstring("\$\\textbf{t=$(round(τ[i],sigdigits=3))}\\,\\textbf{(\\Delta=$(round(score[i],sigdigits=3)))}\$"), titlesize=60)
         else
-            ax = Axis(fig[2*fct+2:3*fct+1, i-Int(indices_len/2)]; title=latexstring("\$\\textbf{t=$(round(τ[i],sigdigits=3))}\$"), titlesize=60)
+            ax = Axis(fig[3*fct+3:4*fct+2, i-Int(indices_len/2)]; title=latexstring("\$\\textbf{t=$(round(τ[i],sigdigits=3))}\\,\\textbf{(\\Delta=$(round(score[i],sigdigits=3)))}\$"), titlesize=60)
         end
         hidedecorations!(ax); hidespines!(ax)
         graphplot!(ax, g_Qarr[i]; kwargs_edges[i]..., kwargs_nodes[i]..., kwargs_arrows[i]...)
     end
     for i = 1:indices_len
         if i <= Int(indices_len/2)
-            ax = Axis3(fig[fct+2:2*fct+1, i], title=latexstring("\$\\textrm{score}=$(round(score[i],sigdigits=3))\$"), titlesize=60, xticklabelsize=40, yticklabelsize=40, zticklabelsize=40, xlabelsize=40, ylabelsize=40, zlabelsize=40, azimuth = azimuth, elevation=elevation)
+            ax = Axis3(fig[fct+2:2*fct+1, i], xticklabelsize=40, yticklabelsize=40, zticklabelsize=40, xlabelsize=40, ylabelsize=40, zlabelsize=40, azimuth = azimuth, elevation=elevation)
         else
-            ax = Axis3(fig[3*fct+2:4*fct+1, i-Int(indices_len/2)], title=latexstring("\$\\textrm{score}=$(round(score[i],sigdigits=3))\$"), titlesize=60, xticklabelsize=40, yticklabelsize=40, zticklabelsize=40, xlabelsize=40, ylabelsize=40, zlabelsize=40, azimuth = azimuth, elevation=elevation)
+            ax = Axis3(fig[4*fct+3:5*fct+2, i-Int(indices_len/2)], xticklabelsize=40, yticklabelsize=40, zticklabelsize=40, xlabelsize=40, ylabelsize=40, zlabelsize=40, azimuth = azimuth, elevation=elevation)
         end
         #scatter!(ax, x[1, 1:res:end], x[2, 1:res:end], x[3, 1:res:end], color=cgrad(colormap)[X_LN_array[i][1:res:end,1]]; markersize=mks)
         scatter!(ax, x[1, 1:res:end], x[2, 1:res:end], x[3, 1:res:end], color=cgrad(colormap)[X_LN_array[i][1:res:end,2]]; markersize=mks)
         #scatter!(ax, x[1, 1:res:end], x[2, 1:res:end], x[3, 1:res:end], color=cgrad(colormap)[X_LN_array[i][1:res:end,3]]; markersize=mks)
+    end
+    for i = 1:indices_len
+        if i <= Int(indices_len/2)
+            ax = Axis(fig[2*fct+2:3*fct+1, i], xticklabelsize=40, yticklabelsize=40, xlabelsize=40, ylabelsize=40)
+        else
+            ax = Axis(fig[5*fct+3:6*fct+2, i-Int(indices_len/2)], xticklabelsize=40, yticklabelsize=40, xlabelsize=40, ylabelsize=40)
+        end
+        t_ax = [dt:dt:Lt*dt...]
+        lines!(ax,t_ax,X[1:Lt],color=cgrad(colormap)[X_LN_array[i][1:Lt,2]])
     end
     Label(fig[1, 1:Int(indices_len/2), Top()], title; textsize=100)
     save("figure/figure" * string(figure_number[1])*string(figure_number[2]) * ".png", fig)
