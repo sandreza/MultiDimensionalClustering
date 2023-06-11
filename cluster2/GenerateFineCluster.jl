@@ -35,7 +35,6 @@ function fine_cluster(x; n_clusters = 2000, file = false, overwrite = false)
             hfile["X"] = X
             hfile["Xc"] = Xc
             close(hfile)
-
         else
             @info "File already exists. Use overwrite = true to overwrite."
         end
