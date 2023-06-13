@@ -41,7 +41,7 @@ for i in 1:6
     spline_u = Spline2D(1:63, 1:79, u)
     spline_v = Spline2D(1:63, 1:79, v)
     stream(x, y) = Point2f(spline_v(x, y), spline_u(x, y))
-    streamplot!(ax, stream, 1:63, 1:79, arrow_size=50, linewidth=5, colormap = :plasma)
+    streamplot!(ax, stream, 1:63, 1:79, arrow_size=20, linewidth=2.5, colormap = :plasma)
     hidedecorations!(ax)
 end
 save("figure/PIV_data.png", fig)
@@ -74,5 +74,5 @@ for i in 1:16
 end
 save("figure/PIV_cluster.png", fig)
 
-
-
+##
+randn(5,5)
