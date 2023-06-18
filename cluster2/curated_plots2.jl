@@ -1,12 +1,12 @@
 using HDF5, GLMakie, GraphMakie, Statistics
-using MarkovChainHammer.BayesianMatrix
+using MarkovChainHammer.BayesianMatrix, LinearAlgebra
 #=
 Plotting Idea: 
-1. Start by show all three system with 2k partitions 
+1. Start by show all three system with 2k partitions (at different angles)
 2. Show in detail the different timescales for the potential Well 
 3. Combine interesting features of the Lorenz and the Newton system 
 4. Show the improvement to the reduced order model 
-5. Next show the Kuramoto Sivishansky dynamics alongside the reduced order model 
+5. Next show the Kuramoto Sivishansky dynamics alongside the reduced order model (potentially with the decorrelation plots)
 6. Lastly show the PIV data and the reduce order model
 =#
 

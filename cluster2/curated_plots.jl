@@ -197,5 +197,5 @@ graphplot!(ax, g_Q; kwargs_edges..., kwargs_nodes..., kwargs_arrows..., layout =
 hidedecorations!(ax)
 hidespines!(ax)
 display(fig)
-
+##
 save("figure/NewtonLorenz.png", fig)
