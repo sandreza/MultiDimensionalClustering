@@ -1,10 +1,10 @@
-using HDF5, GLMakie, FFTW, MultiDimensionalClustering
+using HDF5, GLMakie, FFTW, MultiDimensionalClustering, Random
 using MultiDimensionalClustering.CommunityDetection
 using ParallelKMeans
 using MarkovChainHammer.BayesianMatrix
 directory = pwd() 
 hfile = h5open(directory * "/data/ks_medium_res3.hdf5")
-
+Random.seed!(12345)
 x = read(hfile["u"])
 close(hfile)
 ##
@@ -17,7 +17,7 @@ xs = collect(1:64)
 heatmap!(ax, x[:, indices], colormap=:balance, colorrange=(-2.5, 2.5), interpolate=true)
 display(fig)
 ##
-energy = [norm(x[:, i]) for i in 1:size(x)[2]]
+# [norm(x[:, i]) for i in 1:size(x)[2]]
 clusters = kmeans(x[:, 1:10:end], 100;  max_iters=10^3)
 ##
 X = copy(x)
@@ -86,7 +86,9 @@ centers_list = [[centers_matrix[:,1, i], centers_matrix[:,2, i]] for i in 1:size
 levels = 11
 embedding = StateTreeEmbedding(centers_list, levels)
 ##
+@info "applying embedding"
 markov_embedding = [embedding(x[:,i]) for i in 1:size(x)[2]]
+@info "done with embedding"
 ##
 Q = mean(BayesianGenerator(markov_embedding))
 Λ, V =  eigen(Q)
@@ -121,9 +123,11 @@ display(fig)
 P1 = exp(Q * τs[1])
 P2 = exp(Q)
 ##
+@info "applying LN1"
 q_min = 0.0
 F, G, H, PI = leicht_newman_with_tree(P1, q_min)
 ##
+@info "applying LN2"
 q_min = 0.0
 F2, G2, H2, PI2 = leicht_newman_with_tree(P2, q_min)
 ##
@@ -136,24 +140,38 @@ shift = 10000
 skip = 5
 inds = 1+shift:skip:12000+shift
 colormap = :glasbey_hv_n256
-firstline = 230
-secondline = 700
-thirdline = 1825
-fourthline = 2100
+
+L = 34 
+dt =  0.017 * skip 
+ts = collect(0:length(inds)-1) .* dt
+xs = collect(0:63) / 64 * L 
+Δx = xs[2] - xs[1]
+energy = [sum(x[:, i] .^2 .* Δx) for i in 1:size(x)[2]] 
+##
+
+firstline = ts[230]
+secondline = ts[700]
+thirdline = ts[1825]
+fourthline = ts[2100]
 opacity = 0.5
 linewidth = 10
 linecolor = :yellow
 linecolor2 = :black
-fig = Figure()
-ax1 = Axis(fig[1,2]; title = "Coarse-Grained Cluster Dynamics")
-scatter!(ax1, X_LN[inds], color = X_LN[inds], colormap = colormap)
+labelsize = 40
+
+axis_options = (; titlesize=labelsize, ylabelsize=labelsize, xlabelsize=labelsize, xticklabelsize=labelsize, yticklabelsize=labelsize)
+axis2_options = (; titlesize = labelsize, xlabel = "space", ylabel = "time", ylabelsize=labelsize, xlabelsize=labelsize, xticklabelsize=labelsize, yticklabelsize=labelsize)
+fig = Figure(resolution = (2120, 1432))
+ax1 = Axis(fig[1,2]; title = "Coarse-Grained Cluster Dynamics", xlabel = "time", axis_options..., ylabel = "Cluster Label")
+scatter!(ax1, ts, X_LN[inds]; color = X_LN[inds], colormap = colormap)
+ax1.yticks = ([2, 4, 6, 8, 10, 12, 14])# ([-75, -50, -25, 0, 25, 50, 75], ["75S", "50S", "25S", "0", "25N", "50N", "75N"])
 vlines!(ax1, firstline, linewidth = 10, color = (linecolor2, opacity))
 vlines!(ax1, secondline, linewidth = 10, color = (linecolor2, opacity))
 vlines!(ax1, thirdline, linewidth = 10, color = (linecolor2, opacity))
 vlines!(ax1, fourthline, linewidth = 10, color = (linecolor2, opacity))
-ylims!(0, 13)
-ax2 = Axis(fig[2,2]; title = "Energy Dynamics")
-lines!(ax2, energy[inds] .^2, color = X_LN[inds], colormap = colormap)
+ylims!(0, 15)
+ax2 = Axis(fig[2,2]; title = "Energy Dynamics", xlabel = "time", axis_options..., ylabel = "Energy")
+lines!(ax2, ts, energy[inds], color = X_LN[inds], colormap = colormap)
 vlines!(ax2, firstline, linewidth = 10, color = (linecolor2, opacity))
 vlines!(ax2, secondline, linewidth = 10, color = (linecolor2, opacity))
 vlines!(ax2, thirdline, linewidth = 10, color = (linecolor2, opacity))
@@ -164,10 +182,12 @@ scatter!(ax21, k2_t[inds])
 ax22 = Axis(fig[2,2])
 scatter!(ax22, k3_t[inds])
 =#
-ax3 = Axis(fig[1:2, 1]; title = "Space-Time Dynamics")
-heatmap!(ax3, x[:, inds], colormap = :balance, colorrange = (-3,3), interpolate = true)
+ax3 = Axis(fig[1:2, 1]; title = "Space-Time Dynamics", axis2_options...)
+heatmap!(ax3, xs, ts, x[:, inds], colormap = :balance, colorrange = (-3,3), interpolate = true)
 hlines!(ax3, firstline, linewidth = linewidth, color = linecolor)
 hlines!(ax3, secondline, linewidth = linewidth, color = linecolor)
 hlines!(ax3, thirdline, linewidth = linewidth, color = linecolor)
 hlines!(ax3, fourthline, linewidth = linewidth, color = linecolor)
 display(fig)
+##
+save("figure/KuramotoSivashinsky.png", fig)
