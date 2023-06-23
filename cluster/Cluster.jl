@@ -429,3 +429,8 @@ t_steps[2,:]
 τ
 
 Int.(round.(τ ./dt))
+
+##
+tmp = kmeans(x, 16; max_iters=10^3)
+tmp.assignments
+tmp.centers

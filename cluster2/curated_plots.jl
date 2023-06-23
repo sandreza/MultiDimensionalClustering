@@ -1,5 +1,5 @@
 using HDF5, GLMakie, GraphMakie, Statistics
-using MarkovChainHammer.BayesianMatrix
+using MarkovChainHammer.BayesianMatrix, GLMakie
 
 include("GenerateFineCluster.jl")
 include("GenerateCoarseClusterTree.jl")
@@ -70,13 +70,13 @@ hidespines!(ax11);
 ax12 = LScene(fig[1,3]; show_axis = false)
 res = 10
 markersize = 10.0
-scatter!(ax12, x[1, 1:res:end], x[2, 1:res:end], x[3, 1:res:end], markersize=markersize, color=cgrad(colormap)[X_LN_array1[t][1:res:end]])
+GLMakie.scatter!(ax12, x[1, 1:res:end], x[2, 1:res:end], x[3, 1:res:end], markersize=markersize, color=cgrad(colormap)[X_LN_array1[t][1:res:end]])
 # rotate_cam!(ax12.scene, (0.0, -10.5, 0.0))
 
 ax13 = LScene(fig[1,1]; show_axis = false)
 res = 10
 markersize = 10.0
-scatter!(ax13, x[1, 1:res:end], x[2, 1:res:end], x[3, 1:res:end], markersize=markersize, color=X[1:res:end], colormap = colormap)
+GLMakie.scatter!(ax13, x[1, 1:res:end], x[2, 1:res:end], x[3, 1:res:end], markersize=markersize, color=X[1:res:end], colormap = colormap)
 # rotate_cam!(ax13.scene, (0.0, -10.5, 0.0))
 
 display(fig)
@@ -157,13 +157,13 @@ hidespines!(ax11);
 ax12 = LScene(fig[2,3]; show_axis = false)
 res = 10
 markersize = 10.0
-scatter!(ax12, x[1, 1:res:end], x[2, 1:res:end], x[3, 1:res:end], markersize=markersize, color=cgrad(colormap)[X_LN_array1[t][1:res:end]])
+GLMakie.scatter!(ax12, x[1, 1:res:end], x[2, 1:res:end], x[3, 1:res:end], markersize=markersize, color=cgrad(colormap)[X_LN_array1[t][1:res:end]])
 rotate_cam!(ax12.scene, (0.0, -10.5, 0.0))
 
 ax13 = LScene(fig[2,1]; show_axis = false)
 res = 10
 markersize = 10.0
-scatter!(ax13, x[1, 1:res:end], x[2, 1:res:end], x[3, 1:res:end], markersize=markersize, color=X[1:res:end], colormap = colormap)
+GLMakie.scatter!(ax13, x[1, 1:res:end], x[2, 1:res:end], x[3, 1:res:end], markersize=markersize, color=X[1:res:end], colormap = colormap)
 rotate_cam!(ax13.scene, (0.0, -10.5, 0.0))
 
 display(fig)
@@ -199,3 +199,13 @@ hidespines!(ax)
 display(fig)
 ##
 save("figure/NewtonLorenz.png", fig)
+
+
+##
+fig2 = Figure()
+ax12 = LScene(fig2[1,1]; show_axis = false)
+res = 10
+markersize = 10.0
+GLMakie.scatter!(ax12, x[1, 1:res:end], x[2, 1:res:end], x[3, 1:res:end], markersize=markersize, color=cgrad(colormap)[X_LN[1:res:end]])
+rotate_cam!(ax12.scene, (0.0, -10.5, 0.0))
+display(fig2)
