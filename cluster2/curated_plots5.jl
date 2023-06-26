@@ -4,7 +4,10 @@ using MarkovChainHammer
 using Main.MarkovChainHammer.BayesianMatrix:BayesianGenerator
 using Main.MarkovChainHammer.TransitionMatrix: steady_state
 using Main.MarkovChainHammer.TransitionMatrix:perron_frobenius
+using SparseArrays
 Random.seed!(12345)
+##
+include("curated_plots_convenience_functions.jl")
 ##
 @info "opening data"
 hfile = h5open("data/lorenz.hdf5")
@@ -25,6 +28,7 @@ P1 = exp(Q * τs[3])
 q_min = 0.0
 @info "leicht_newman_with_tree"
 F, G, H, PI = leicht_newman_with_tree(P1, q_min)
+@info "done with Leicht Newmann algorithm"
 node_labels, adj, adj_mod, edge_numbers = graph_from_PI(PI)
 X_LN = classes_timeseries(F, markov_embedding)
 ##
@@ -103,7 +107,7 @@ Q = mean(BayesianGenerator(markov_embedding))
 Λ, V =  eigen(Q)
 τs = reverse((-1 ./ real.(Λ[end-20:end]))[1:end-1])
 ##
-P1 = exp(Q * τs[3])
+P1 = exp(Q * τs[3]) 
 q_min = 0.0
 @info "leicht_newman_with_tree"
 F, G, H, PI = leicht_newman_with_tree(P1, q_min)
