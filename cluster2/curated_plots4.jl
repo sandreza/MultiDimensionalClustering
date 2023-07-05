@@ -1,7 +1,8 @@
-using HDF5, GLMakie, FFTW, MultiDimensionalClustering, Random
-using MultiDimensionalClustering.CommunityDetection
+using HDF5, GLMakie, FFTW, MultiDimensionalClustering, Random, ProgressBars
+using MultiDimensionalClustering.CommunityDetection, LinearAlgebra, Statistics
 using ParallelKMeans
 using MarkovChainHammer.BayesianMatrix
+using MarkovChainHammer.Trajectory: generate
 directory = pwd() 
 hfile = h5open(directory * "/data/ks_medium_res3.hdf5")
 Random.seed!(12345)
@@ -14,11 +15,11 @@ skip = 20
 indices = 1:skip:60000
 ts = (indices .- 1) .* skip
 xs = collect(1:64)
-heatmap!(ax, x[:, indices], colormap=:balance, colorrange=(-2.5, 2.5), interpolate=true)
+GLMakie.heatmap!(ax, x[:, indices], colormap=:balance, colorrange=(-2.5, 2.5), interpolate=true)
 display(fig)
 ##
 # [norm(x[:, i]) for i in 1:size(x)[2]]
-clusters = kmeans(x[:, 1:10:end], 100;  max_iters=10^3)
+# clusters = kmeans(x[:, 1:10:end], 100;  max_iters=10^3)
 ##
 X = copy(x)
 ##
@@ -103,8 +104,15 @@ k2_t = [real(koopman2[embedding_index]) for embedding_index in markov_embedding]
 k3_t = [real(koopman3[embedding_index]) for embedding_index in markov_embedding]
 k4_t = [real(koopman4[embedding_index]) for embedding_index in markov_embedding]
 ##
+L = 34 
+dt =  0.017 * skip 
 shift = 10000
 inds = 1+shift:10000+shift
+ts = collect(0:length(inds)-1) .* dt
+xs = collect(0:63) / 64 * L 
+Δx = xs[2] - xs[1]
+energy = [sum(x[:, i] .^2 .* Δx) for i in 1:size(x)[2]] 
+##
 fig = Figure()
 ax1 = Axis(fig[1,1])
 scatter!(ax1, k1_t[inds])
@@ -115,7 +123,7 @@ scatter!(ax21, k2_t[inds])
 ax22 = Axis(fig[2,2])
 scatter!(ax22, k3_t[inds])
 ax3 = Axis(fig[1:2, 3])
-heatmap!(ax3, x[:, inds], colormap = :balance, colorrange = (-2,2))
+GLMakie.heatmap!(ax3, x[:, inds], colormap = :balance, colorrange = (-2,2))
 display(fig)
 ##
 τs = reverse((-1 ./ real.(Λ[end-20:end]))[1:end-1])
@@ -132,7 +140,7 @@ q_min = 0.0
 F2, G2, H2, PI2 = leicht_newman_with_tree(P2, q_min)
 ##
 X_LN = classes_timeseries(F, markov_embedding) # 4 groups
-X_LN = classes_timeseries(F2, markov_embedding) # 12 groups
+X_LN = classes_timeseries(F2, markov_embedding) # 18 groups
 ##
 p = real.(V[:,end] ./ sum(V[:, end]))
 ##
@@ -164,12 +172,12 @@ axis2_options = (; titlesize = labelsize, xlabel = "space", ylabel = "time", yla
 fig = Figure(resolution = (2120, 1432))
 ax1 = Axis(fig[1,2]; title = "Coarse-Grained Cluster Dynamics", xlabel = "time", axis_options..., ylabel = "Cluster Label")
 scatter!(ax1, ts, X_LN[inds]; color = X_LN[inds], colormap = colormap)
-ax1.yticks = ([2, 4, 6, 8, 10, 12, 14])# ([-75, -50, -25, 0, 25, 50, 75], ["75S", "50S", "25S", "0", "25N", "50N", "75N"])
+ax1.yticks = ([2, 4, 6, 8, 10, 12, 14, 16, 18])# ([-75, -50, -25, 0, 25, 50, 75], ["75S", "50S", "25S", "0", "25N", "50N", "75N"])
 vlines!(ax1, firstline, linewidth = 10, color = (linecolor2, opacity))
 vlines!(ax1, secondline, linewidth = 10, color = (linecolor2, opacity))
 vlines!(ax1, thirdline, linewidth = 10, color = (linecolor2, opacity))
 vlines!(ax1, fourthline, linewidth = 10, color = (linecolor2, opacity))
-ylims!(0, 15)
+GLMakie.ylims!(0, 20)
 ax2 = Axis(fig[2,2]; title = "Energy Dynamics", xlabel = "time", axis_options..., ylabel = "Energy")
 lines!(ax2, ts, energy[inds], color = X_LN[inds], colormap = colormap)
 vlines!(ax2, firstline, linewidth = 10, color = (linecolor2, opacity))
@@ -183,7 +191,7 @@ ax22 = Axis(fig[2,2])
 scatter!(ax22, k3_t[inds])
 =#
 ax3 = Axis(fig[1:2, 1]; title = "Space-Time Dynamics", axis2_options...)
-heatmap!(ax3, xs, ts, x[:, inds], colormap = :balance, colorrange = (-3,3), interpolate = true)
+GLMakie.heatmap!(ax3, xs, ts, x[:, inds], colormap = :balance, colorrange = (-3,3), interpolate = true)
 hlines!(ax3, firstline, linewidth = linewidth, color = linecolor)
 hlines!(ax3, secondline, linewidth = linewidth, color = linecolor)
 hlines!(ax3, thirdline, linewidth = linewidth, color = linecolor)
