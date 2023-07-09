@@ -1,6 +1,7 @@
 using Flux, GLMakie, ProgressBars
-
+using Random
 using Flux.Data, MLDatasets
+Random.seed!(12345)
 function get_data(batch_size)
     xtrain, _ = MLDatasets.MNIST.traindata(Float32)
     d = prod(size(xtrain)[1:2]) # input dimension
@@ -22,6 +23,7 @@ x̄ = mean(x, dims=2)
 x̃ = x .- x̄
 x̂ = std(x̃, dims=2)
 x̃ ./= x̂ 
+batch_size = 1000
 dl = DataLoader(x̃, batchsize=batch_size, shuffle=true)
 d = size(x[:,1])[1]
 device = cpu # where will the calculations be performed?
@@ -97,7 +99,6 @@ loss(data_sample)
 opt = ADAM(η)
 ps = Flux.params(m) # parameters
 lvalue = train!(loss, ps, opt, dl, 10) 
-push!(search_list, (L1, L2, lvalue[1]))
 ##
 fig = Figure()
 for i in 1:9
