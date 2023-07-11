@@ -99,7 +99,7 @@ opt = ADAM(η) # optimizer
 ps = Flux.params(encoder, decoder) # parameters
 # encoder_trained = deepcopy(encoder)
 # decoder_trained = deepcopy(decoder)
-train!(loss, ps, opt, dl, 10)
+train!(loss, ps, opt, dl, 100)
 ##
 fig = Figure()
 # Random.seed!(12345)
@@ -171,11 +171,11 @@ for i in 1:N^2
     μ1 = mean(dist1)
     ax = Axis(fig[ii, jj]; title = string("μ = ", μ1))
 
-    hist!(ax, dist1  , bins = 100, color = :blue)
+    hist!(ax, dist1, bins = 100, color = (:blue, 0.5), normalization = :pdf)
     dist2 = x̃[1,:] .* x̃[(i-1) * 4 + 1,:]  
     μ2 = mean(dist2)
-    ax2 = Axis(fig[ii, jj + 4]; title = string("μ = ", μ2))
-    hist!(ax2, dist2, bins = 100, color = :red)
+    # ax2 = Axis(fig[ii, jj + 4]; title = string("μ = ", μ2))
+    hist!(ax, dist2, bins = 100, color = (:red, 0.5), normalization = :pdf)
     xlims!(ax, -5, 5)
 end
 display(fig)
