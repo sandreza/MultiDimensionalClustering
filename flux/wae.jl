@@ -2,7 +2,15 @@ using Flux, GLMakie, ProgressBars
 using Random
 using Flux.Data, MLDatasets
 Flux.Zygote.@nograd Flux.params
+Flux.Zygote.@nograd sort!
+using HDF5, Random, Statistics, LinearAlgebra
 
+directory = pwd() 
+hfile = h5open(directory * "/data/ks_medium_res3.hdf5")
+Random.seed!(12345)
+x = read(hfile["u"])
+close(hfile)
+d = size(x[:,1])[1]
 L1 = 48
 L2 = 16
 
@@ -10,12 +18,7 @@ device = cpu
 encoder = Chain(Dense(d, L1, leakyrelu), Parallel(tuple, Dense(L1, L2), Dense(L1, L2))) |> device
 decoder = Chain(Dense(L2, L1, leakyrelu), Dense(L1, d)) |> device
 
-using HDF5, Random, Statistics
-directory = pwd() 
-hfile = h5open(directory * "/data/ks_medium_res3.hdf5")
-Random.seed!(12345)
-x = read(hfile["u"])
-close(hfile)
+
 ##
 x̄ = mean(x, dims=2)
 x̃ = x .- x̄
@@ -23,52 +26,6 @@ x̂ = std(x̃, dims=2)
 x̃ ./= x̂ 
 batch_size = 1000
 dl = DataLoader(x̃[:, 1:10:end], batchsize=batch_size, shuffle=true)
-d = size(x[:,1])[1]
-device = cpu # where will the calculations be performed?
-
-##
-function reconstuct(x)
-    μ, logσ = encoder(x) # decode posterior parameters
-    ϵ = device(randn(Float32, size(logσ))) # sample from N(0,I)
-    z = μ + ϵ .* exp.(logσ) # reparametrization
-    μ, logσ, decoder(z)
-end
-
-function vae_loss(λ, x)
-    len = size(x)[end]
-    μ, logσ, decoder_z = reconstuct(x)
-
-    # D_KL(q(z|x) || p(z|x))
-    kl_q_p = 0.5f0 * sum(@. (exp(2f0 * logσ) + μ^2 - 1f0 - 2f0 * logσ)) / len # from (10) in [1]
-
-    # E[log p(x|z)]
-    logp_x_z =  -Flux.Losses.logitbinarycrossentropy(decoder_z, x, agg=sum)/len
-
-    # regularization
-    reg = λ * sum(x->sum(x.^2), Flux.params(decoder))
-
-    -logp_x_z + kl_q_p + reg
-end
-
-
-λ = 1 * 0.005f0
-loss(x) = vae_loss(λ, x)
-loss(data_sample)
-
-η = 1e-6
-opt = ADAM(η) # optimizer
-ps = Flux.params(encoder, decoder) # parameters
-train!(loss, ps, opt, dl, 100)
-
-##
-fig = Figure() 
-ax = Axis(fig[1,1])
-lines!(ax, decoder(reverse(encoder(img_sample[1])[1])))
-scatter!(ax, img_sample[1], color = :red)
-display(fig)
-
-##
-Flux.Zygote.@nograd sort!
 
 normsq(x) = norm.(eachcol(x)).^2 |> device
 function distance(x::AbstractMatrix)
@@ -109,13 +66,33 @@ function wae_loss(λ, x)
     smpl_pz = device(randn(Float32, size(smpl_qz)...))
     reconstruction_loss(x, y) + λ*mmd_penalty(smpl_pz, smpl_qz)
 end
-##
 
+function train!(model_loss, model_params, opt, loader, epochs = 10)
+    train_steps = 0
+    "Start training for total $(epochs) epochs" |> println
+    loss_value = [0.0]
+    for epoch = 1:epochs
+        print("Epoch $(epoch): ")
+        ℒ = 0
+        for x in loader
+            loss, back = Flux.pullback(model_params) do
+                model_loss(x |> device)
+            end
+            grad = back(1f0)
+            Flux.Optimise.update!(opt, model_params, grad)
+            train_steps += 1
+            ℒ += loss
+        end
+        println("ℒ = $ℒ")
+        loss_value[1] = ℒ
+    end
+    "Total train steps: $train_steps" |> println
+    return loss_value
+end
 ##
-scale = 1e2
+scale = 1e0
 λ = 10.0f0 * scale
 loss(x) = wae_loss(λ, x)
-loss(data_sample)
 
 η = 1e-3 / scale
 opt = ADAM(η) # optimizer
@@ -202,8 +179,3 @@ for i in 1:N^2
     xlims!(ax, -5, 5)
 end
 display(fig)
-##
-μs = mean([encoder(x[:,i])[1] for i in 1:564705])
-
-lines(decoder(randn(L2)))
-lines(decoder(μs .+ 1 * randn(16)))
