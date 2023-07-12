@@ -81,6 +81,7 @@ function train!(model_loss, model_params, opt, loader, epochs = 10)
             loss, back = Flux.pullback(model_params) do
                 model_loss(x |> device)
             end
+            # equivalent to tmp() = model_loss(x |> device); loss, back =  Flux.pullback(tmp(), model_params);
             grad = back(1f0)
             Flux.Optimise.update!(opt, model_params, grad)
             train_steps += 1
@@ -102,7 +103,7 @@ opt = ADAM(η) # optimizer
 ps = Flux.params(encoder, decoder) # parameters
 # encoder_trained = deepcopy(encoder)
 # decoder_trained = deepcopy(decoder)
-train!(loss, ps, opt, dl, 100)
+train!(loss, ps, opt, dl, 1000)
 ##
 fig = Figure()
 # Random.seed!(12345)
