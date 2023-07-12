@@ -11,12 +11,15 @@ Random.seed!(12345)
 x = read(hfile["u"])
 close(hfile)
 d = size(x[:,1])[1]
-L1 = 48
+L1 = 32 # 48
 L2 = 16
 
+activation_function = leakyrelu
 device = cpu
-encoder = Chain(Dense(d, L1, leakyrelu), Parallel(tuple, Dense(L1, L2), Dense(L1, L2))) |> device
-decoder = Chain(Dense(L2, L1, leakyrelu), Dense(L1, d)) |> device
+# encoder = Chain(Dense(d, L1, activation_function), Dense(L1, L1, activation_function),  Parallel(tuple, Dense(L1, L2, activation_function), Dense(L1, L2, activation_function)), Parallel(tuple, Dense(L2, L2), Dense(L2, L2)) ) |> device
+# decoder = Chain(Dense(L2, L1, activation_function), Dense(L1, L1, activation_function),  Dense(L1, d)) |> device
+encoder = Chain(Dense(d, L1, activation_function),  Parallel(tuple, Dense(L1, L2), Dense(L1, L2)) ) |> device
+decoder = Chain(Dense(L2, L1, activation_function),  Dense(L1, d)) |> device
 
 
 ##
@@ -24,7 +27,7 @@ x̄ = mean(x, dims=2)
 x̃ = x .- x̄
 x̂ = std(x̃, dims=2)
 x̃ ./= x̂ 
-batch_size = 1000
+batch_size = 100
 dl = DataLoader(x̃[:, 1:10:end], batchsize=batch_size, shuffle=true)
 
 normsq(x) = norm.(eachcol(x)).^2 |> device
@@ -90,7 +93,7 @@ function train!(model_loss, model_params, opt, loader, epochs = 10)
     return loss_value
 end
 ##
-scale = 1e0
+scale = 1e2
 λ = 10.0f0 * scale
 loss(x) = wae_loss(λ, x)
 
@@ -114,7 +117,7 @@ for i in 1:9
     ϵ = device(randn(Float32, size(logσ))) # sample from N(0,I)
     println(logσ)
     z = μ + ϵ .* exp.(logσ) 
-    scatter!(ax, decoder(z), color = :red)
+    scatter!(ax, decoder(z), color = (:red, 0.5))
     # scatter!(ax, encoder(xval)[1])
 end
 display(fig)
@@ -127,7 +130,7 @@ for i in 1:16
     ii = (i-1)÷4 + 1
     jj = (i-1)%4 + 1
     ax = Axis(fig[ii, jj])
-    hist!(ax, xₑₙ[i,:], bins = 100)
+    hist!(ax, xₑₙ[i,:], bins = 100, normalization = :pdf)
     xlims!(ax, -5, 5)
 end
 display(fig)
@@ -168,12 +171,12 @@ for i in 1:N^2
     jj = (i-1)%N + 1
 
     dist1 = xₛₐ[1,:] .* xₛₐ[(i-1) * 4 + 1,:]
+    dist2 = x̃[1,:] .* x̃[(i-1) * 4 + 1,:]  
     μ1 = mean(dist1)
-    ax = Axis(fig[ii, jj]; title = string("μ = ", μ1))
+    μ2 = mean(dist2)
+    ax = Axis(fig[ii, jj]; title = string("μgen = ", μ1, " μtrue = ", μ2))
 
     hist!(ax, dist1, bins = 100, color = (:blue, 0.5), normalization = :pdf)
-    dist2 = x̃[1,:] .* x̃[(i-1) * 4 + 1,:]  
-    μ2 = mean(dist2)
     # ax2 = Axis(fig[ii, jj + 4]; title = string("μ = ", μ2))
     hist!(ax, dist2, bins = 100, color = (:red, 0.5), normalization = :pdf)
     xlims!(ax, -5, 5)
