@@ -3,8 +3,8 @@ using Flux
 using GLMakie
 using Statistics
 using ProgressBars
-X = rand(100)
-Y = 0.5X + rand(100)
+X = randn(100)
+Y = 0.5X + randn(100)
 fig = Figure()
 ax = Axis(fig[1,1]; xlabel = "x", ylabel = "y", title = "Data for linear model")
 scatter!(ax, X, Y, color = :black)
