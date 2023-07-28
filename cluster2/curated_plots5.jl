@@ -1,4 +1,4 @@
-using HDF5, GLMakie, ParallelKMeans, LinearAlgebra, Statistics, Random, Plots
+using HDF5, GLMakie, ParallelKMeans, LinearAlgebra, Statistics, Random
 using MultiDimensionalClustering.CommunityDetection, ProgressBars
 using MarkovChainHammer
 using Main.MarkovChainHammer.BayesianMatrix:BayesianGenerator
@@ -24,13 +24,24 @@ Q = mean(BayesianGenerator(markov_embedding))
 Λ, V =  eigen(Q)
 τs = reverse((-1 ./ real.(Λ[end-20:end]))[1:end-1])
 ##
-P1 = exp(Q * τs[3])
+P1 = exp(Q * τs[3]) 
 q_min = 0.0
 @info "leicht_newman_with_tree"
 F, G, H, PI = leicht_newman_with_tree(P1, q_min)
 @info "done with Leicht Newmann algorithm"
 node_labels, adj, adj_mod, edge_numbers = graph_from_PI(PI)
 X_LN = classes_timeseries(F, markov_embedding)
+##
+q_min = 0.0
+P1⁺ = exp(Q * (τs[3] +1)) 
+P1⁻ = exp(Q * (τs[3] -1))
+F⁺, _, _, _ = leicht_newman_with_tree(P1⁺, q_min)
+F⁻, _, _, _ = leicht_newman_with_tree(P1⁻, q_min)
+X_LN⁺ = classes_timeseries(F⁺, markov_embedding)
+X_LN⁻ = classes_timeseries(F⁻, markov_embedding)
+score1, _ =  label_ordering(X_LN⁺, X_LN)
+score2, _ =  label_ordering(X_LN⁻, X_LN)
+score = (score1 + score2) / 2
 ##
 fig = Figure(resolution = (3200, 800))
 layout = Buchheim()
@@ -114,6 +125,17 @@ F, G, H, PI = leicht_newman_with_tree(P1, q_min)
 node_labels, adj, adj_mod, edge_numbers = graph_from_PI(PI)
 X_LN = classes_timeseries(F, markov_embedding)
 ##
+q_min = 0.0
+P1⁺ = exp(Q * (τs[3] +1)) 
+P1⁻ = exp(Q * (τs[3] -1))
+F⁺, _, _, _ = leicht_newman_with_tree(P1⁺, q_min)
+F⁻, _, _, _ = leicht_newman_with_tree(P1⁻, q_min)
+X_LN⁺ = classes_timeseries(F⁺, markov_embedding)
+X_LN⁻ = classes_timeseries(F⁻, markov_embedding)
+score1, _ =  label_ordering(X_LN⁺, X_LN)
+score2, _ =  label_ordering(X_LN⁻, X_LN)
+score = (score1 + score2) / 2
+##
 colormap = :glasbey_hv_n256
 set_theme!(backgroundcolor=:white)
 
@@ -171,7 +193,7 @@ graphplot!(ax, g_Q; kwargs_edges..., kwargs_nodes..., kwargs_arrows..., layout =
 hidedecorations!(ax)
 hidespines!(ax)
 display(fig)
-
+##
 
 save("figure/NewtonLorenz.png", fig)
 

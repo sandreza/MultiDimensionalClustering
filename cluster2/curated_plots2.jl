@@ -176,3 +176,33 @@ end
 display(fig)
 ##
 save("figure/curated_Figure2.png", fig)
+##
+τs = reverse((1.0 ./ -real.(Λ))[1:end-1])
+ts = []
+scores = []
+for i in [1, 4, 8]
+    @info "beginning"
+    τ = τs[i]
+    P = exp(Q*τ)
+    P⁺ = exp(Q*(τ+dt))
+    P⁻ = exp(Q*(τ-dt))
+    @info "matrix exponential"
+    q_min = 0.0
+    @info "L1"
+    F, _, _, _ = leicht_newman_with_tree(P, q_min)
+    @info "L2"
+    F⁺, _, _, _ = leicht_newman_with_tree(P⁺, q_min)
+    @info "L3"
+    F⁻, _, _, _ = leicht_newman_with_tree(P⁻, q_min)
+    @info "classes"
+    X_LN = classes_timeseries(F, X)
+    X_LN⁺ = classes_timeseries(F⁺, X)
+    X_LN⁻ = classes_timeseries(F⁻, X)
+    @info "label ordering"
+    score1, _ =  label_ordering(X_LN⁺, X_LN)
+    @info "label ordering 2"
+    score2, _ =  label_ordering(X_LN⁻, X_LN)
+    score = (score1 + score2) / 2
+    push!(scores, score)
+    push!(ts, τ)
+end

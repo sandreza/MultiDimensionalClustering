@@ -1,3 +1,38 @@
+using Combinatorics
+function diff_check(a,b)
+    if a == b 
+        return 0.
+    else 
+        return 1.
+    end
+end
+function label_ordering(cc_minus, cc_plus)
+    cc_plus_len = length(union(cc_plus))
+    perms_start = [1:cc_plus_len...]
+    perms_array = []
+    perms = permutations(perms_start)
+    for p in perms
+        push!(perms_array,p)
+    end
+    cc_plus_temp = copy(cc_plus)
+    cc_plus_ord = copy(cc_plus)
+    ScoreOld = 1.
+    ScoreNew = 1.
+    for i in eachindex(perms_array)
+        for j in eachindex(cc_plus)
+            cc_plus_temp[j] = findall(y->y==cc_plus[j],perms_array[i])[1]
+        end
+        ScoreNew = sum(diff_check.(cc_minus, cc_plus_temp))/length(cc_minus)
+        if ScoreNew < ScoreOld
+            cc_plus_ord = copy(cc_plus_temp)
+            ScoreOld = ScoreNew
+        end
+    end
+    return ScoreOld, cc_plus_ord
+end
+##
+
+
 function my_split(X)
     numstates = 2
     r0 = kmeans(X, numstates; max_iters=10000)
