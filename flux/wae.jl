@@ -94,7 +94,7 @@ function train!(model_loss, model_params, opt, loader, epochs = 10)
     return loss_value
 end
 ##
-scale = 1e2
+scale = 1e0
 λ = 10.0f0 * scale
 loss(x) = wae_loss(λ, x)
 
